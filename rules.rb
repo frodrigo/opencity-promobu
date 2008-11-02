@@ -14,6 +14,7 @@ require 'promobu/snaps.rb'
 include Snaps
 
 require 'promobu/exportX3D.rb'
+require 'promobu/exportAC3D.rb'
 require 'promobu/exportSVG.rb'
 require 'promobu/optimize.rb'
 
@@ -120,15 +121,19 @@ def testTTD
 end
 
 
-root = Node.new( nil, "root", Box.new(V3[10,30,10]), V3._0, V3._0 )
 
-#testCanary.apply( [root] )
-testTTD.apply( [root] )
+root = Node.new( nil, "root", Box.new(V3[5,3,4]), V3._0, V3._0 )
+testCanary.apply( [root] )
+
+#root = Node.new( nil, "root", Box.new(V3[10,30,10]), V3._0, V3._0 )
+#testTTD.apply( [root] )
+
 #SnapRegistery.instance.parallel(V3[0,0,1])
 #puts SnapRegistery.instance.nearestSnapPlane(V3[1.4,0,0],V3[0,0,1])
 
 #print root.to_s() + "\n"
 
-root = Optimize::optimize( root )
+#root = Optimize::optimize( root )
 
-ExportX3D::export( root, "out.x3d" )
+#ExportX3D::export( root, "out.x3d" )
+ExportAC3D::export( root, "out.ac" )
