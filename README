@@ -1,0 +1,15 @@
+Description:
+	Procedure Modeling of Building, part of OpenCity project, another 3D city simulation game.
+
+This is partial ruby implementation of "Procedural modeling of buildings" by P. Mueller.
+RTFSC
+
+Look at for withpaper:
+http://www.vision.ee.ethz.ch/~pmueller/documents/mueller.procedural_modeling_of_buildings.SG2006.web-version.pdf
+
+Some details at:
+http://www.opencity.info/wiki/index.php/BuildingProceduralGenerationOverview
+http://www.opencity.info/wiki/index.php/BuildingProceduralGeneration
+
+Last modified:
+	$Id$
