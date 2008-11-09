@@ -280,6 +280,14 @@ module ProcedureBuildingGenerator
 			self.w = w
 			self.h = h
 		end
+
+		def eql?( other )
+			if other.is_a?(TiledTexture) then
+				super( other) and self.w == other.w and self.h == other.h
+			else
+				false
+			end
+		end
 	end
 
 end
