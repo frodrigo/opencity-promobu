@@ -68,7 +68,7 @@ module Snaps
 		end
 
 		def <<( snapPlane )
-			snapGroup = snapPlane.snap.snapGroup 
+			snapGroup = snapPlane.snap.snapGroup
 			if not self.snapPlanes.key?(snapGroup) then
 				self.snapPlanes[snapGroup] = []
 			end

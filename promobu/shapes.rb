@@ -37,10 +37,10 @@ module Shapes
 			returns
 		end
 
-		def snap( node, axis, snapGroup, partSize )
-			sum = 0
+		def snap( node, axis, snapGroup, partSize, length )
+			sum = newSum = 0
 			last = 0
-			partSize.collect{ |part|
+			newPart = partSize.collect{ |part|
 				if not part.is_a?(Snap) then
 					sum += part
 					snapedPosition = SnapRegistery.instance.nearestSnapPlane(
@@ -57,6 +57,10 @@ module Shapes
 					part
 				end
 			}
+			if newSum != length then
+				newPart << length-newSum
+			end
+			newPart
 		end
 
 		def tile( node, axis, tileSize, snapPlane=nil, snapGroup=false )
@@ -79,7 +83,7 @@ module Shapes
 				partSize = [tileSize] * nbTiles
 			end
 			if snapGroup != nil then
-				subDivise( axis, snap(node, axis, snapGroup, partSize) )
+				subDivise( axis, snap(node, axis, snapGroup, partSize, length) )
 			else
 				subDivise( axis, partSize )
 			end

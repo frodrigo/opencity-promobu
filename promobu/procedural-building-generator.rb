@@ -34,7 +34,7 @@ class Vector
 	end
 
 	def cross_product( v )
-		V3[y*v.z-z*v.y, z*v.x-z*v.z, x*v.y-y*v.x]
+		V3[y*v.z-z*v.y, z*v.x-x*v.z, x*v.y-y*v.x]
 	end
 
 	def collinear?( v )
