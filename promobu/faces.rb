@@ -7,6 +7,9 @@ module Faces
 	class ::Faces::Face < ShapeSplit
 	end
 
+	class ::Faces::AllFaces < Face
+	end
+	
 	class ::Faces::BottomFace < Face
 	end
 
@@ -20,6 +23,12 @@ module Faces
 	end
 
 	class ::Faces::LeftFace < Face
+	end
+
+	class ::Faces::FrontFace < Face
+	end
+
+	class ::Faces::BackFace < Face
 	end
 
 	class ::Faces::MainFaces < Face

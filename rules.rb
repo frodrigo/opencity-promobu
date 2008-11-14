@@ -120,6 +120,109 @@ def testTTD
 	rulesSet
 end
 
+def testNYC1920
+	rulesSet = RulesSet.new()
+
+	rulesSet << Rule.new("delete", nil, [Instantiate.new(Empty,nil)])
+
+	rulesSet << Rule.new("root", nil, [Split.new(YAxis, [[AbsoluteSize.new(2.5),"groundLevel0"], [AbsoluteSize.new(0.3),"groundLevelFrise0"], [AbsoluteSize.new(0.9),"frise0"], [AbsoluteSize.new(0.1),"frise0frise0"], [RelativeSize.new(1),"MainLevels"], [AbsoluteSize.new(1.3),"LastMainLevel"], [AbsoluteSize.new(0.1),"topFrise0frise00"], [AbsoluteSize.new(1.1),"topFrise0"], [AbsoluteSize.new(0.3),"roof0"], [AbsoluteSize.new(1.2),"balcon0"]])])
+
+	rulesSet << Rule.new("groundLevel0", nil, [Component.new(SideFaces, ["groundLevel0face"])])
+	rulesSet << Rule.new("groundLevel0face", Proc.new{|node| node.queryAbsRotation?(V3._0)}, [Split.new(XAxis, [[AbsoluteSize.new(2.5),"groundLevel0BigDoor"], [RelativeSize.new(1),"groundLevel0Door1"], [AbsoluteSize.new(2.5),"groundLevel0BigDoor"]])])
+	rulesSet << Rule.new("groundLevel0face", nil, [I.new("groundLevel0Door1")])
+	rulesSet << Rule.new("groundLevel0BigDoor", nil, [Scope.new(Proc.new{|scope| V3[scope.x,scope.y,0.4]}), Translation.new(V3[0,0,-0.4]), Instantiate.new(Box,"BigDoor0")])
+	rulesSet << Rule.new("BigDoor0", nil, [Component.new(FrontFace, ["groundLevel0Door2"]), Component.new(RightFace, ["groundLevel0Door2DoorColumn2"]), Component.new(LeftFace, ["groundLevel0Door2DoorColumn2"])])
+	rulesSet << Rule.new("groundLevel0Door2", nil, [Split.new(XAxis, [[AbsoluteSize.new(0.5),"groundLevel0Door2DoorColumn"],[RelativeSize.new(1),"groundLevel0Door2Door"],[AbsoluteSize.new(0.5),"groundLevel0Door2DoorColumn"]])])
+	rulesSet << Rule.new("groundLevel0Door1", nil, [Split.new(XAxis, [[RelativeSize.new(1),"groundLevel0Door11"], [AbsoluteSize.new(1.8),"groundLevel0Door2Door"]])])
+	rulesSet << Rule.new("groundLevel0Door11", nil, [Tile.new(XAxis, 2 ,"groundLevel0Door12")])
+	rulesSet << Rule.new("groundLevel0Door12", nil, [Split.new(XAxis, [[AbsoluteSize.new(1.8),"groundLevel0Door2Door"],[RelativeSize.new(1),"groundLevel0Door2DoorColumn"]])])
+	rulesSet << Rule.new("groundLevel0Door2DoorColumn", nil, [Scope.new(Proc.new{|scope| V3[scope.x,scope.y,0.2]}), Translation.new(V3[0,0,-0.2]), Instantiate.new(Box,"groundLevel0Door2DoorColumn1")])
+	rulesSet << Rule.new("groundLevel0Door2DoorColumn1", nil, [Component.new(FrontFace, ["groundLevel0Door2DoorColumn2"]), Component.new(RightFace,["groundLevel0Door2DoorColumn2"]), Component.new(LeftFace,["groundLevel0Door2DoorColumn2"])])
+
+	rulesSet << Rule.new("groundLevelFrise0", nil, [Scope.new(Proc.new{ |scope| scope+V3[0.4,0,0.4] }), Translation.new(V3[-0.2,0,-0.2]), I.new("groundLevelFrise1")])
+	rulesSet << Rule.new("groundLevelFrise1", nil, [Component.new(AllFaces, ["groundLevelFriseFace"])])
+
+	rulesSet << Rule.new("MainLevels", nil, [Tile.new(YAxis, 1, "MainLevel0")])
+	rulesSet << Rule.new("MainLevel0", nil, [Component.new(SideFaces, ["MainLevelFace0"])])
+	rulesSet << Rule.new("MainLevelFace0", Proc.new{|node| node.queryAbsRotation?(V3._0)}, [Split.new(XAxis, [[AbsoluteSize.new(2.5),"MainLevel0Border"], [RelativeSize.new(1),"MainLevel0Center0"], [AbsoluteSize.new(2.5),"MainLevel0Border"]])])
+	rulesSet << Rule.new("MainLevelFace0", nil, [Tile.new(XAxis, 2.5, "MainLevel0Border")])
+	rulesSet << Rule.new("MainLevel0Border", nil, [Split.new(XAxis, [[AbsoluteSize.new(0.5),"MainLevel0BorderWall"],[RelativeSize.new(1),"MainLevel0BorderWindows2"],[AbsoluteSize.new(0.5),"MainLevel0BorderWall"]])])
+	rulesSet << Rule.new("MainLevel0Center0", nil, [Split.new(XAxis, [[RelativeSize.new(1),"MainLevel0Center1"],[AbsoluteSize.new(1.8),"MainLevel0CenterWindows2"]])])
+	rulesSet << Rule.new("MainLevel0Center1", nil, [Tile.new(XAxis,2,"MainLevel0Center2")])
+	rulesSet << Rule.new("MainLevel0Center2", nil, [Split.new(XAxis, [[AbsoluteSize.new(1.8),"MainLevel0CenterWindows2"],[RelativeSize.new(1),"MainLevel0CenterColumn"]])])
+
+	rulesSet << Rule.new("LastMainLevel", nil, [Component.new(SideFaces, ["LastMainLevelFace0"])])
+	rulesSet << Rule.new("LastMainLevelFace0", Proc.new{|node| node.queryAbsRotation?(V3._0)}, [Split.new(XAxis, [[AbsoluteSize.new(2.5),"LastMainLevel0Border"], [RelativeSize.new(1),"LastMainLevel0Center0"], [AbsoluteSize.new(2.5),"LastMainLevel0Border"]])])
+	rulesSet << Rule.new("LastMainLevelFace0", nil, [Tile.new(XAxis, 2.5 ,"LastMainLevel0Border")])
+	rulesSet << Rule.new("LastMainLevel0Border", nil, [Split.new(XAxis, [[AbsoluteSize.new(0.5),"LastMainLevel0BorderWall"],[RelativeSize.new(1),"LastMainLevel0BorderWindows2"],[AbsoluteSize.new(0.5),"LastMainLevel0BorderWall"]])])
+	rulesSet << Rule.new("LastMainLevel0Center0", nil, [Split.new(XAxis, [[RelativeSize.new(1),"LastMainLevel0Center1"],[AbsoluteSize.new(1.8),"LastMainLevel0CenterWindows2"]])])
+	rulesSet << Rule.new("LastMainLevel0Center1", nil, [Tile.new(XAxis,2,"LastMainLevel0Center2")])
+	rulesSet << Rule.new("LastMainLevel0Center2", nil, [Split.new(XAxis, [[AbsoluteSize.new(1.8),"LastMainLevel0CenterWindows2"],[RelativeSize.new(1),"LastMainLevel0CenterColumn"]])])
+
+	rulesSet << Rule.new("frise0", nil, [Component.new(SideFaces, ["frise0face"])])
+	rulesSet << Rule.new("frise0face", nil, [Split.new(YAxis, [[RelativeSize.new(1),"frise0windows"], [AbsoluteSize.new(0.1),"frise0wall"], ])])
+	rulesSet << Rule.new("frise0windows", Proc.new{|node| node.queryAbsRotation?(V3._0)}, [Split.new(XAxis, [[AbsoluteSize.new(2.5),"frise0windwosBorder"], [RelativeSize.new(1),"frise0windwosCenter0"], [AbsoluteSize.new(2.5),"frise0windwosBorder"]])])
+	rulesSet << Rule.new("frise0windows", nil, [Split.new(XAxis,[[RelativeSize.new(1),"frise0windwosCenter0"]])])
+	rulesSet << Rule.new("frise0windwosBorder", nil, [Split.new(XAxis, [[AbsoluteSize.new(0.5),"frise0windwosBorderSatus"],[RelativeSize.new(1),"frise0windwosWindows2"],[AbsoluteSize.new(0.5),"frise0windwosBorderSatus"]])])
+	rulesSet << Rule.new("frise0windwosCenter0", nil, [Split.new(XAxis, [[RelativeSize.new(1),"frise0windwosCenter1"],[AbsoluteSize.new(1.8),"frise0windwosWindows2"]])])
+	rulesSet << Rule.new("frise0windwosCenter1", nil, [Tile.new(XAxis,2,"frise0windwosCenter2")])
+	rulesSet << Rule.new("frise0windwosCenter2", nil, [Split.new(XAxis, [[AbsoluteSize.new(1.8),"frise0windwosWindows2"],[RelativeSize.new(1),"frise0windwosBlason"]])])
+
+	rulesSet << Rule.new("topFrise0", nil, [Component.new(SideFaces, ["topFrise0face"])])
+	rulesSet << Rule.new("topFrise0face", nil, [Split.new(YAxis, [[RelativeSize.new(1),"topFrise0windows0"], [AbsoluteSize.new(0.3),"topFrise0frise1"]])])
+	rulesSet << Rule.new("topFrise0windows0", nil, [Split.new(XAxis, [[AbsoluteSize.new(0.4),"topFrise0windows0box"], [RelativeSize.new(1),"topFrise0windows1"]])])
+	rulesSet << Rule.new("topFrise0windows1", nil, [Tile.new(XAxis,1,"topFrise0windows2")])
+	rulesSet << Rule.new("topFrise0windows2", nil, [Split.new(XAxis, [[RelativeSize.new(1),"topFrise0windows0window"], [AbsoluteSize.new(0.4),"topFrise0windows0box"], ])])
+
+	rulesSet << Rule.new("balcon0", nil, [Component.new(SideFaces, ["balcon0face"])])
+	rulesSet << Rule.new("balcon0face", nil, [Split.new(XAxis, [[AbsoluteSize.new(0.3),"balcon0corner"], [AbsoluteSize.new(1),"balcon0join"], [RelativeSize.new(1),"balcon1"], [AbsoluteSize.new(0.3),"balcon0corner"]])])
+	rulesSet << Rule.new("balcon1", nil, [Tile.new(XAxis, 1.3, "balcon2")])
+	rulesSet << Rule.new("balcon2", nil, [Split.new(XAxis, [[RelativeSize.new(1),"balcon0column"], [AbsoluteSize.new(1),"balcon0join"]])])
+
+	rulesSet << Rule.new("frise0frise0", nil, [Scope.new(Proc.new{ |scope| scope+V3[0.4,0,0.4] }), Translation.new(V3[-0.2,0,-0.2]), I.new("frise0frise1")])
+	rulesSet << Rule.new("frise0frise1", nil, [Component.new(AllFaces, ["frise0friseFace"])])
+
+	rulesSet << Rule.new("topFrise0frise00", nil, [Scope.new(Proc.new{ |scope| scope+V3[0.4,0,0.4] }), Translation.new(V3[-0.2,0,-0.2]), I.new("topFrise0frise01")])
+	rulesSet << Rule.new("topFrise0frise01", nil, [Component.new(AllFaces, ["topFrise0frise01Face"])])
+
+	rulesSet << Rule.new("roof0", nil, [Scope.new(Proc.new{ |scope| scope+V3[0.8,0,0.8] }), Translation.new(V3[-0.4,0,-0.4]), I.new("roof1")])
+	rulesSet << Rule.new("roof1", nil, [Component.new(AllFaces, ["roof0Face"])])
+
+	rulesSet << Rule.new("balcon0", nil, [Component.new(SideFaces, ["balcon0face"])])
+
+	rulesSet << Rule.new("groundLevel0Door2DoorColumn2", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/ground-column.png"))])
+	rulesSet << Rule.new("groundLevel0Door2Door", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/ground-door.png"))])
+	rulesSet << Rule.new("groundLevelFriseFace", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/ground-frise.png"))])
+
+	rulesSet << Rule.new("MainLevel0CenterColumn", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/main-wall.png"))])
+	rulesSet << Rule.new("MainLevel0BorderWall", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/main-wall.png"))])
+	rulesSet << Rule.new("MainLevel0BorderWindows2", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/main-windows2.png"))])
+	rulesSet << Rule.new("MainLevel0CenterWindows2", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/main-windows2c.png"))])
+
+	rulesSet << Rule.new("LastMainLevel0CenterColumn", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/main-wall.png"))])
+	rulesSet << Rule.new("LastMainLevel0BorderWall", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/main-wall.png"))])
+	rulesSet << Rule.new("LastMainLevel0BorderWindows2", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/main-last-windows2.png"))])
+	rulesSet << Rule.new("LastMainLevel0CenterWindows2", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/main-last-windows2c.png"))])
+
+	rulesSet << Rule.new("frise0friseFace", nil, [BindTexture.new(TiledTexture.new("nyc1920/frise-frise.png", 18*0.1/12, 0.1))])
+	rulesSet << Rule.new("frise0windwosWindows2", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/frise-windows2.png"))])
+	rulesSet << Rule.new("frise0windwosBorderSatus", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/frise-status.png"))])
+	rulesSet << Rule.new("frise0windwosBlason", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/frise-blason.png"))])
+	rulesSet << Rule.new("frise0wall", nil, [BindTexture.new(TiledTexture.new("nyc1920/wall.png",13/55, 1))])
+
+	rulesSet << Rule.new("topFrise0frise01Face", nil, [BindTexture.new(TiledTexture.new("nyc1920/top-frise-frise0.png", 47*0.1/9, 0.1))])
+	rulesSet << Rule.new("topFrise0frise1", nil, [BindTexture.new(TiledTexture.new("nyc1920/top-frise-frise1.png", 83*0.1/29, 0.1))])
+	rulesSet << Rule.new("topFrise0windows0box", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/top-frise-box.png"))])
+	rulesSet << Rule.new("topFrise0windows0window", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/top-frise-window.png"))])
+
+	rulesSet << Rule.new("roof0Face", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/roof-frise.png"))])
+
+	rulesSet << Rule.new("balcon0corner", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/balcon-corner.png"))])
+	rulesSet << Rule.new("balcon0join", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/balcon-join.png"))])
+	rulesSet << Rule.new("balcon0column", nil, [BindTexture.new(AdaptedTexture.new("nyc1920/balcon-column.png"))])
+
+	rulesSet
+end
 
 
 root = Node.new( nil, "root", Box.new(V3[5,3,4]), V3._0, V3._0 )
@@ -127,6 +230,9 @@ testCanary.apply( [root] )
 
 #root = Node.new( nil, "root", Box.new(V3[10,30,10]), V3._0, V3._0 )
 #testTTD.apply( [root] )
+
+#root = Node.new( nil, "root", Box.new(V3[20,14,8]), V3._0, V3._0 )
+#testNYC1920.apply( [root] )
 
 #SnapRegistery.instance.parallel(V3[0,0,1])
 #puts SnapRegistery.instance.nearestSnapPlane(V3[1.4,0,0],V3[0,0,1])

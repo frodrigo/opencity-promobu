@@ -182,6 +182,10 @@ module Shapes
 				[ componentTop ]
 			elsif splitType == BottomFace then
 				[ componentBottom ]
+			elsif splitType == FrontFace then
+				[ componentFront ]
+			elsif splitType == BackFace then
+				[ componentBack ]
 			else
 				[ componentBottom, componentTop, componentFront, componentBack, componentLeft, componentRight ]
 			end
