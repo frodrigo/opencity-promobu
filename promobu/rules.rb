@@ -121,66 +121,87 @@ module Rules
 		end
 	end
 
-	class ::Rules::Split < SubNodeGenerator
-		attr_accessor :axis
+	class ::Rules::SplitComponant
+	end
+
+	class ::Rules::SplitElement < SplitComponant
 		attr_accessor :parts
 		attr_accessor :snapGroup
 
-		def initialize( axis, parts, snapGroup=nil )
-			self.axis = axis
+		def initialize( parts, snapGroup=nil )
 			self.parts = parts
 			self.snapGroup = snapGroup
 		end
 
-		def apply( node, shape )
+		def apply( axis, node, shape )
 			subNode = []
 			partSizes = parts.collect{ |x| if x.is_a?(Array) then x[0] else x end }
 			partIds = parts.collect{ |x| if x.is_a?(Array) then x[1] else x end }
 			shape.split( node, axis, partSizes, snapGroup ).each{ |subShapeArray|
 				id = partIds.shift()
-				if not subShapeArray[2].is_a?(SnapPlaneRectangle) then
-					subNode << Node.new( node, id, subShapeArray[2], subShapeArray[0], subShapeArray[1] )
-				else
+				if subShapeArray[2].is_a?(SnapPlaneRectangle) then
 					absPosition, absRotation = node.toAbs( subShapeArray[0], subShapeArray[1] )
 					SnapRegistery.instance << SnapPlane.new( subShapeArray[2].snap, absPosition, absRotation )
 root = node
 while root.parent != nil do root = root.parent end
 root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, absRotation )
+				elsif id.is_a?(SplitComponant) then
+					subNode.concat( id.apply( axis, node, subShapeArray[2] ).collect{ |nodeComponent|
+						Node.new( node, nodeComponent.ruleId, nodeComponent.shape, nodeComponent.position+subShapeArray[0], nodeComponent.rotation+subShapeArray[1] )
+					} )
+				else
+					subNode << Node.new( node, id, subShapeArray[2], subShapeArray[0], subShapeArray[1] )
 				end
 			}
 			subNode
 		end
 	end
 
-	class ::Rules::Tile < SubNodeGenerator
-		attr_accessor :axis
+	class ::Rules::SplitRepeat < SplitComponant
 		attr_accessor :tileSize
-		attr_accessor :tileId
+		attr_accessor :splitComponant
 		attr_accessor :snapPlane
 		attr_accessor :snapGroup
 
-		def initialize( axis, tileSize, tileId, snapPlane=nil, snapGroup=nil )
-			self.axis = axis
+		def initialize( tileSize, splitComponant, snapPlane=nil, snapGroup=nil )
 			self.tileSize = tileSize
-			self.tileId = tileId
+			self.splitComponant = splitComponant
 			self.snapPlane = snapPlane
 			self.snapGroup = snapGroup
 		end
 
-		def apply( node, shape )
+		def apply( axis, node, shape )
 			subNode = []
 			shape.tile( node, axis, tileSize, snapPlane, snapGroup ).each{ |subShapeArray|
-				if not subShapeArray[2].is_a?(SnapPlaneRectangle) then
-					subNode << Node.new( node, tileId, subShapeArray[2], subShapeArray[0], subShapeArray[1] )
-				else
+				if subShapeArray[2].is_a?(SnapPlaneRectangle) then
 					absPosition, absRotation = node.toAbs( subShapeArray[0], subShapeArray[1] )
 					SnapRegistery.instance << SnapPlane.new( subShapeArray[2].snap, absPosition, absRotation )
 root = node
 while root.parent != nil do root = root.parent end
 root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, absRotation )
+				elsif splitComponant.is_a?(SplitComponant) then
+					subNode.concat( splitComponant.apply( axis, node, subShapeArray[2] ).collect{ |nodeComponent|
+						Node.new( node, nodeComponent.ruleId, nodeComponent.shape, nodeComponent.position+subShapeArray[0], nodeComponent.rotation+subShapeArray[1] )
+					} )
+				else
+					subNode << Node.new( node, splitComponant, subShapeArray[2], subShapeArray[0], subShapeArray[1] )
 				end
 			}
 			subNode
+		end
+	end
+
+	class ::Rules::Split < SubNodeGenerator
+		attr_accessor :axis
+		attr_accessor :splitComponant
+
+		def initialize( axis, splitComponant )
+			self.axis = axis
+			self.splitComponant = splitComponant
+		end
+
+		def apply( node, shape )
+			splitComponant.apply( axis, node, shape )
 		end
 	end
 
