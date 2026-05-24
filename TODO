@@ -1,0 +1,10 @@
+Augementer l'expressivite des regles
+ * Utilisation de la fonction scope partout
+ * Rendre Split profondable
+ * Regles probabilistes
+Ajouter la notion de lot de regles
+Changer la facon de parcourer l'arbre et les regles : rules first, width first
+Detection d'occlusion
+
+Ajouter la commande Extrude
+Introduire un split.index et split.total dans la shpe (utili pour la detection de la perm et der partie)
