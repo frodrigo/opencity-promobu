@@ -12,7 +12,7 @@ module Math
 			else Math.cos(a*Math::PI/180)
 		end
 	end
-	
+
 	def Math.degSin( a )
 		case a%360
 			when 0 then 0
@@ -25,11 +25,11 @@ module Math
 end
 
 class Vector
-	def x() self[0] end
-	def y() self[1] end
-	def z() self[2] end
+	def x; self[0]; end
+	def y; self[1]; end
+	def z; self[2]; end
 
-	def to_s()
+	def to_s
 		"#{x},#{y},#{z}"
 	end
 
@@ -39,7 +39,7 @@ class Vector
 
 	def collinear?( v )
 		cos = ( self.x*v.x + self.y*v.y + self.z*v.z ) / Float( self.r * v.r )
-		(cos-1).abs < 1e-15 or (cos+1).abs < 1e-15
+		(cos-1).abs < 1e-15 || (cos+1).abs < 1e-15
 	end
 
 	def eql?( v )
@@ -110,11 +110,11 @@ class V3 < Vector
 end
 
 class V2 < Vector
-	def x() self[0] end
-	def y() self[1] end
-	def z() 0 end
+	def x; self[0]; end
+	def y; self[1]; end
+	def z; 0; end
 
-	def to_s()
+	def to_s
 		"#{x},#{y}"
 	end
 end
@@ -128,7 +128,7 @@ module ProcedureBuildingGenerator
 		attr_accessor :position
 		attr_accessor :rotation
 		attr_accessor :subNodes
-	
+
 		def initialize( parent, ruleId, shape, position, rotation )
 			self.parent = parent
 			self.ruleId = ruleId
@@ -137,15 +137,15 @@ module ProcedureBuildingGenerator
 			self.rotation = rotation
 			self.subNodes = []
 		end
-	
+
 		def <<( subNode )
 			self.subNodes << subNode
 		end
-	
-		def to_s()
+
+		def to_s
 			"#{ruleId}:#{shape}@(#{position})[#{subNodes}]"
 		end
-	
+
 		def Node.baseChange( basePosition, baseRotation, position, rotation )
 			r = baseRotation.rotationMatrix
 			t = basePosition.reverseTranslationMatrix
@@ -155,7 +155,7 @@ module ProcedureBuildingGenerator
 			nRotation = baseRotation + rotation
 			[ nPosition, nRotation ]
 		end
-	
+
 		def Node.baseUnChange( basePosition, baseRotation, position, rotation )
 			r = baseRotation.reverseRotationMatrix
 			t = basePosition.translationMatrix
@@ -165,62 +165,62 @@ module ProcedureBuildingGenerator
 			nRotation = baseRotation + rotation
 			[ nPosition, nRotation ]
 		end
-	
+
 		def toAbs( position, rotation )
-			if self.parent == nil then
+			if self.parent.nil?
 				[ position, rotation ]
 			else
 				(position, rotation) = Node.baseUnChange( self.position, self.rotation, position, rotation )
 				self.parent.toAbs( position, rotation )
 			end
 		end
-	
+
 		def toRelative( position, rotation )
-			if self.parent == nil then
+			if self.parent.nil?
 				[ position, rotation ]
 			else
 				(position, rotation) = self.parent.toRelative( position, rotation )
 				Node.baseChange( self.position, self.rotation, position, rotation )
 			end
 		end
-	
+
 		def abs!
-			if self.parent != nil
+			unless self.parent.nil?
 				(self.position, self.rotation) = Node.baseUnChange( self.parent.position, self.parent.rotation, self.position, self.rotation )
 			end
 			self.subNodes.collect!{ |subNode|
 				subNode.abs!
 			}
-			if self.subNodes != [] then
-				(self.position, self.rotation) = [V3._0,V3._0]
+			unless self.subNodes.empty?
+				(self.position, self.rotation) = [V3._0, V3._0]
 			end
 			self
 		end
-	
+
 		def queryAbsRotation?( queryRotation )
 			r = toAbs( V3._0, V3._0 )[1]
-			( r.x%360 - queryRotation.x ).abs < 1e-15 and ( r.y%360 - queryRotation.y ).abs < 1e-15 and ( r.z%360 - queryRotation.z ).abs < 1e-15
+			( r.x%360 - queryRotation.x ).abs < 1e-15 && ( r.y%360 - queryRotation.y ).abs < 1e-15 && ( r.z%360 - queryRotation.z ).abs < 1e-15
 		end
-		
+
 		def dir
 			r = rotation.rotationMatrix
 			zaxis = Vector[ZAxis.vector[0], ZAxis.vector[1], ZAxis.vector[2], 1]
 			dir = r * zaxis
 			V3[dir.x, dir.y, dir.z]
 		end
-	
+
 		def getAllLeafNode
-			if subNodes == [] then
+			if subNodes.empty?
 				[self]
 			else
-				self.subNodes.collect{ |subNode|
+				self.subNodes.map { |subNode|
 					subNode.getAllLeafNode
 				}.flatten!
 			end
 		end
-	
+
 	end
-	
+
 	class Axis
 		@@vector = V3[0,0,0]
 		def Axis.vector()
@@ -228,7 +228,7 @@ module ProcedureBuildingGenerator
 		end
 		def Axis.component( v ) 0 end
 	end
-	
+
 	class XAxis < Axis
 		@@vector_ = V3[1,0,0]
 		def XAxis.vector()
@@ -236,7 +236,7 @@ module ProcedureBuildingGenerator
 		end
 		def XAxis.component( v ) v.x end
 	end
-	
+
 	class YAxis < Axis
 		@@vector_ = V3[0,1,0]
 		def YAxis.vector()
@@ -244,7 +244,7 @@ module ProcedureBuildingGenerator
 		end
 		def YAxis.component( v ) v.y end
 	end
-	
+
 	class ZAxis < Axis
 		@@vector_ = V3[0,0,1]
 		def ZAxis.vector()
@@ -252,29 +252,29 @@ module ProcedureBuildingGenerator
 		end
 		def ZAxis.component( v ) v.z end
 	end
-	
+
 	class Texture
 		attr_accessor :textureFile
-	
+
 		def initialize( textureFile )
 			self.textureFile = textureFile
 		end
-	
+
 		def eql?( other )
-			self.class == other.class and self.textureFile == other.textureFile
+			self.class == other.class && self.textureFile == other.textureFile
 		end
 	end
-	
+
 	class AdaptedTexture < Texture
 		def initialize( textureFile )
 			super( textureFile )
 		end
 	end
-	
+
 	class TiledTexture < Texture
 		attr_accessor :w
 		attr_accessor :h
-	
+
 		def initialize( textureFile, w, h )
 			super( textureFile )
 			self.w = w
@@ -282,8 +282,8 @@ module ProcedureBuildingGenerator
 		end
 
 		def eql?( other )
-			if other.is_a?(TiledTexture) then
-				super( other) and self.w == other.w and self.h == other.h
+			if other.is_a?(TiledTexture)
+				super(other) && self.w == other.w && self.h == other.h
 			else
 				false
 			end

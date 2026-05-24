@@ -5,7 +5,6 @@ module ExportAC3D
 		ac3d.write("AC3Db\n")
 		root.exportAC3D(ac3d)
 		ac3d.close
-		
 	end
 end
 
@@ -27,15 +26,15 @@ module ProcedureBuildingGenerator
 
 		def exportAC3D( ac3d )
 			ac3d.write("OBJECT\n")
-			if position.x != 0 or position.y != 0 or position.z !=0  then
+			if position.x != 0 || position.y != 0 || position.z != 0
 				ac3d.write("loc #{position.x} #{position.y} #{position.z}\n")
 			end
-			if rotation.x != 0 or rotation.y != 0 or rotation.z !=0  then
+			if rotation.x != 0 || rotation.y != 0 || rotation.z != 0
 				rotationMatrix = rotation.rotationMatrix
 				ac3d.write("rot #{rotationMatrix[0,0]} #{rotationMatrix[0,1]} #{rotationMatrix[0,2]} #{rotationMatrix[1,0]} #{rotationMatrix[1,1]} #{rotationMatrix[1,2]} #{rotationMatrix[2,0]} #{rotationMatrix[2,1]} #{rotationMatrix[2,2]}\n")
 			end
 			ac3d.write("name \"#{ruleId}\"\n")
-			if subNodes == [] then
+			if subNodes.empty?
 				ac3d.write("kids 1\n")
 				ac3d.write("OBJECT\n")
 				shape.exportAC3D( ac3d )
@@ -54,7 +53,7 @@ end
 module Shapes
 	class ::Shapes::Shape
 		def exportAC3D( ac3d )
-			if self.texture then
+			if self.texture
 				ac3d.write("texture \"#{self.texture.textureFile}\"\n")
 			end
 		end

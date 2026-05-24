@@ -15,7 +15,7 @@ module Rules
 		end
 
 		def apply?( node )
-			if condition == nil then
+			if condition.nil?
 				true
 			else
 				condition.call( node )
@@ -29,30 +29,30 @@ module Rules
 		def generate( node, generativeParts, position, rotation, scope )
 			returns = []
 			generativeParts.each { |generativePart|
-				if generativePart.is_a?(ContextEdit) then
+				if generativePart.is_a?(ContextEdit)
 					(position, rotation, scope) = generativePart.apply( position, rotation, scope )
-				elsif generativePart.is_a?(Creational) then
+				elsif generativePart.is_a?(Creational)
 					returns << generativePart.apply( node, position, rotation, scope )
-				elsif generativePart.is_a?(SubContext) then
+				elsif generativePart.is_a?(SubContext)
 					returns.concat( generate( node, generativePart.generativeParts, position, rotation, scope ) )
-				elsif generativePart.is_a?(SubNodeGenerator) then
+				elsif generativePart.is_a?(SubNodeGenerator)
 					returns.concat( generativePart.apply( node, node.shape ) )
-				elsif generativePart.is_a?(BindTexture) then
+				elsif generativePart.is_a?(BindTexture)
 					generativePart.apply( node.shape )
 				end
 			}
-			return returns
+			returns
 		end
 	end
 
 	class ::Rules::GenerativePart
-		def apply()
+		def apply
 		end
 	end
 
 	class ::Rules::SubContext < GenerativePart
 		attr_accessor :generativeParts
-	
+
 		def initialize( generativeParts )
 			self.generativeParts = generativeParts
 		end
@@ -84,7 +84,7 @@ module Rules
 
 	class ::Rules::Scope < ContextEdit
 		def apply( position, rotation, scope )
-			if v3.is_a?(Proc) then
+			if v3.is_a?(Proc)
 				[ position, rotation, v3.call(scope) ]
 			else
 				[ position, rotation, scope+v3 ]
@@ -112,8 +112,8 @@ module Rules
 			ids_local = ids.dup
 			id = nil
 			shape.component( splitType ).each{ |subShapeArray|
-				if ids_local.length >= 1 then
-					id = ids_local.shift()
+				if ids_local.length >= 1
+					id = ids_local.shift
 				end
 				subNode << Node.new( node, id, subShapeArray[2], subShapeArray[0], subShapeArray[1] )
 			}
@@ -135,17 +135,17 @@ module Rules
 
 		def apply( axis, node, shape )
 			subNode = []
-			partSizes = parts.collect{ |x| if x.is_a?(Array) then x[0] else x end }
-			partIds = parts.collect{ |x| if x.is_a?(Array) then x[1] else x end }
+			partSizes = parts.map { |x| x.is_a?(Array) ? x[0] : x }
+			partIds   = parts.map { |x| x.is_a?(Array) ? x[1] : x }
 			shape.split( node, axis, partSizes, snapGroup ).each{ |subShapeArray|
-				id = partIds.shift()
-				if subShapeArray[2].is_a?(SnapPlaneRectangle) then
+				id = partIds.shift
+				if subShapeArray[2].is_a?(SnapPlaneRectangle)
 					absPosition, absRotation = node.toAbs( subShapeArray[0], subShapeArray[1] )
 					SnapRegistery.instance << SnapPlane.new( subShapeArray[2].snap, absPosition, absRotation )
 root = node
-while root.parent != nil do root = root.parent end
+root = root.parent until root.parent.nil?
 root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, absRotation )
-				elsif id.is_a?(SplitComponant) then
+				elsif id.is_a?(SplitComponant)
 					subNode.concat( id.apply( axis, node, subShapeArray[2] ).collect{ |nodeComponent|
 						Node.new( node, nodeComponent.ruleId, nodeComponent.shape, nodeComponent.position+subShapeArray[0], nodeComponent.rotation+subShapeArray[1] )
 					} )
@@ -173,13 +173,13 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 		def apply( axis, node, shape )
 			subNode = []
 			shape.tile( node, axis, tileSize, snapPlane, snapGroup ).each{ |subShapeArray|
-				if subShapeArray[2].is_a?(SnapPlaneRectangle) then
+				if subShapeArray[2].is_a?(SnapPlaneRectangle)
 					absPosition, absRotation = node.toAbs( subShapeArray[0], subShapeArray[1] )
 					SnapRegistery.instance << SnapPlane.new( subShapeArray[2].snap, absPosition, absRotation )
 root = node
-while root.parent != nil do root = root.parent end
+root = root.parent until root.parent.nil?
 root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, absRotation )
-				elsif splitComponant.is_a?(SplitComponant) then
+				elsif splitComponant.is_a?(SplitComponant)
 					subNode.concat( splitComponant.apply( axis, node, subShapeArray[2] ).collect{ |nodeComponent|
 						Node.new( node, nodeComponent.ruleId, nodeComponent.shape, nodeComponent.position+subShapeArray[0], nodeComponent.rotation+subShapeArray[1] )
 					} )
@@ -226,11 +226,11 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 
 	class ::Rules::I < Creational
 		attr_accessor :id
-		
+
 		def initialize( id )
 			self.id = id
 		end
-	
+
 		def apply( node, position, rotation, scope )
 			shape = node.shape.clone
 			shape.scope = scope
@@ -241,14 +241,14 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 	class ::Rules::Roof < Creational
 		attr_accessor :roofType
 		attr_accessor :id
-	
+
 		def initialize( roofType, id )
 			self.roofType = roofType
 			self.id = id
 		end
 
 		def apply( node, position, rotation, scope )
-			if roofType == GabledRoof or true then
+			if roofType == GabledRoof || true
 				Node.new( node, id, TriangularPrism.new( V3[scope.x,scope.y/4.0,scope.y]), position, V3[rotation.x-90,rotation.y,rotation.z] )
 			end
 		end
@@ -268,8 +268,8 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 
 	class ::Rules::RulesSet
 		attr_accessor :rules
-	
-		def initialize()
+
+		def initialize
 			self.rules = []
 		end
 
@@ -281,14 +281,14 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 			subNodes = []
 			nodes.each{ |node|
 				self.rules.each{ |rule|
-					if rule.id == node.ruleId and rule.apply?(node) then
+					if rule.id == node.ruleId && rule.apply?(node)
 						node.subNodes.concat( rule.apply( node ) )
 						subNodes.concat( node.subNodes )
 						break
 					end
 				}
 			}
-			if subNodes != [] then
+			unless subNodes.empty?
 				apply( subNodes )
 			end
 			nodes
@@ -297,11 +297,11 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 
 	class ::Rules::Size
 		attr_accessor :value
-		
+
 		def initialize( value )
 			self.value = value
 		end
-		
+
 		def to_s
 			value
 		end

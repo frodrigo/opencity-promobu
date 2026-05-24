@@ -16,9 +16,9 @@ module Shapes
 			# length = 2 + 1r + 1 + 2r + 2 => compute r value
 			sumAbsolute = sumRelative = 0
 			partSizes.each{ |size|
-				if size.is_a?(AbsoluteSize) then
+				if size.is_a?(AbsoluteSize)
 					sumAbsolute += size.value
-				elsif size.is_a?(RelativeSize) then
+				elsif size.is_a?(RelativeSize)
 					sumRelative += size.value
 				end
 			}
@@ -26,9 +26,9 @@ module Shapes
 			r = (length - sumAbsolute) / Float(sumRelative)
 			returns = []
 			partSizes.each{ |size|
-				if size.is_a?(AbsoluteSize) then
+				if size.is_a?(AbsoluteSize)
 					returns << size.value
-				elsif size.is_a?(RelativeSize) then
+				elsif size.is_a?(RelativeSize)
 					returns << size.value * r
 				else
 					returns << size
@@ -41,7 +41,7 @@ module Shapes
 			sum = newSum = 0
 			last = 0
 			newPart = partSize.collect{ |part|
-				if not part.is_a?(Snap) then
+				unless part.is_a?(Snap)
 					sum += part
 					snapedPosition = SnapRegistery.instance.nearestSnapPlane(
 						snapGroup,
@@ -57,7 +57,7 @@ module Shapes
 					part
 				end
 			}
-			if newSum != length then
+			if newSum != length
 				newPart << length-newSum
 			end
 			newPart
@@ -69,12 +69,12 @@ module Shapes
 			# Adjust tileSize to fill completly
 			tileSize = length/Float(nbTiles)
 
-			if nbTiles <= 0 then
+			if nbTiles <= 0
 				return []
 			end
 
-			if snapPlane != nil then
-				if nbTiles >= 2 then
+			if snapPlane
+				if nbTiles >= 2
 					partSize = [tileSize,snapPlane] * (nbTiles-1) + [tileSize]
 				else
 					partSize = [tileSize]
@@ -82,7 +82,7 @@ module Shapes
 			else
 				partSize = [tileSize] * nbTiles
 			end
-			if snapGroup != nil then
+			if snapGroup
 				subDivise( axis, snap(node, axis, snapGroup, partSize, length) )
 			else
 				subDivise( axis, partSize )
@@ -91,14 +91,14 @@ module Shapes
 
 		def split( node, axis, partSizes, snapGroup=nil )
 			absPartSizes = absolutPartSizes( axis.component(scope), partSizes )
-			if snapGroup != nil then
+			if snapGroup
 				subDivise( axis, snap(node, axis, snapGroup, absPartSizes) )
 			else
 				subDivise( axis, absPartSizes )
 			end
 		end
 
-		def to_s()
+		def to_s
 			self.class.to_s + "(#{scope})"
 		end
 	end
@@ -118,20 +118,20 @@ module Shapes
 	class ::Shapes::Rectangle < Shape2D
 		def subDivise( axis, absPartSizes )
 			returns = []
-			if axis == XAxis then
+			if axis == XAxis
 				sumAbsPartSize = 0
 				absPartSizes.each{ |absPartSize|
-					if not absPartSize.is_a?(Snap) then
+					unless absPartSize.is_a?(Snap)
 						returns << [ V3[sumAbsPartSize,0,0], V3._0, Rectangle.new(V2[absPartSize,scope.y]) ]
 						sumAbsPartSize += absPartSize
 					else
 						returns << [ V3[sumAbsPartSize,0,0], V3[0,-90,0], SnapPlaneRectangle.new(absPartSize, V2[scope.y*1.1,scope.y*1.1]) ]
 					end
 				}
-			elsif axis == YAxis then
+			elsif axis == YAxis
 				sumAbsPartSize = 0
 				absPartSizes.each{ |absPartSize|
-					if not absPartSize.is_a?(Snap) then
+					unless absPartSize.is_a?(Snap)
 						returns << [ V3[0,sumAbsPartSize,0], V3._0, Rectangle.new(V2[scope.x,absPartSize]) ]
 						sumAbsPartSize += absPartSize
 					else
@@ -147,44 +147,32 @@ module Shapes
 	end
 
 	class ::Shapes::Box < Shape3D
-		def componentBottom()
-			[ V3._0, V3[90,0,0], Rectangle.new(V2[scope.x,scope.z]) ]
-		end
+		def componentBottom; [ V3._0, V3[90,0,0], Rectangle.new(V2[scope.x,scope.z]) ]; end
 
-		def componentTop()
-			[ V3[0,scope.y,0], V3[90,0,0], Rectangle.new(V2[scope.x,scope.z]) ]
-		end
+		def componentTop; [ V3[0,scope.y,0], V3[90,0,0], Rectangle.new(V2[scope.x,scope.z]) ]; end
 
-		def componentFront()
-			[ V3._0, V3._0, Rectangle.new(V2[scope.x,scope.y]) ]
-		end
+		def componentFront; [ V3._0, V3._0, Rectangle.new(V2[scope.x,scope.y]) ]; end
 
-		def componentBack()
-			[ V3[scope.x,0,scope.z], V3[0,180,0], Rectangle.new(V2[scope.x,scope.y]) ]
-		end
+		def componentBack; [ V3[scope.x,0,scope.z], V3[0,180,0], Rectangle.new(V2[scope.x,scope.y]) ]; end
 
-		def componentLeft()
-			[ V3[0,0,scope.z], V3[0,90,0], Rectangle.new(V2[scope.z,scope.y]) ]
-		end
+		def componentLeft; [ V3[0,0,scope.z], V3[0,90,0], Rectangle.new(V2[scope.z,scope.y]) ]; end
 
-		def componentRight()
-			[ V3[scope.x,0,0], V3[0,-90,0], Rectangle.new(V2[scope.z,scope.y]) ]
-		end
+		def componentRight; [ V3[scope.x,0,0], V3[0,-90,0], Rectangle.new(V2[scope.z,scope.y]) ]; end
 
 		def component( splitType )
-			if splitType == SideFaces then
+			if splitType == SideFaces
 				[ componentFront, componentBack, componentLeft, componentRight ]
-			elsif splitType == RightFace then
+			elsif splitType == RightFace
 				[ componentRight ]
-			elsif splitType == LeftFace then
+			elsif splitType == LeftFace
 				[ componentLeft ]
-			elsif splitType == TopFace then
+			elsif splitType == TopFace
 				[ componentTop ]
-			elsif splitType == BottomFace then
+			elsif splitType == BottomFace
 				[ componentBottom ]
-			elsif splitType == FrontFace then
+			elsif splitType == FrontFace
 				[ componentFront ]
-			elsif splitType == BackFace then
+			elsif splitType == BackFace
 				[ componentBack ]
 			else
 				[ componentBottom, componentTop, componentFront, componentBack, componentLeft, componentRight ]
@@ -193,30 +181,30 @@ module Shapes
 
 		def subDivise( axis, absPartSizes )
 			returns = []
-			if axis == XAxis then
+			if axis == XAxis
 				sumAbsPartSize = 0
 				absPartSizes.each{ |absPartSize|
-					if not absPartSize.is_a?(Snap) then
+					unless absPartSize.is_a?(Snap)
 						returns << [ V3[sumAbsPartSize,0,0], V3._0, Box.new(V3[absPartSize,scope.y,scope.z]) ]
 						sumAbsPartSize += absPartSize
 					else
 						returns << [ V3[sumAbsPartSize,0,0], V3[0,-90,0], SnapPlaneRectangle.new(absPartSize, V2[scope.z*1.1,scope.y*1.1]) ]
 					end
 				}
-			elsif axis == YAxis then
+			elsif axis == YAxis
 				sumAbsPartSize = 0
 				absPartSizes.each{ |absPartSize|
-					if not absPartSize.is_a?(Snap) then
+					unless absPartSize.is_a?(Snap)
 						returns << [ V3[0,sumAbsPartSize,0], V3._0, Box.new(V3[scope.x,absPartSize,scope.z]) ]
 						sumAbsPartSize += absPartSize
 					else
 						returns << [ V3[0,sumAbsPartSize,0], V3[-90,0,0], SnapPlaneRectangle.new(absPartSize, V2[scope.x*1.1,scope.z*1.1]) ]
 					end
 				}
-			elsif axis == ZAxis then
+			elsif axis == ZAxis
 				sumAbsPartSize = 0
 				absPartSizes.each{ |absPartSize|
-					if not absPartSize.is_a?(Snap) then
+					unless absPartSize.is_a?(Snap)
 						returns << [ V3[0,0,sumAbsPartSize], V3._0, Box.new(V3[scope.x,scope.y,absPartSize]) ]
 						sumAbsPartSize += absPartSize
 					else
@@ -232,26 +220,18 @@ module Shapes
 	end
 
 	class ::Shapes::TriangularPrism < Shape3D
-		def componentFront()
-			[ V3._0, V3[Math.atan2(scope.z/2.0,Float(scope.y))*180/Math::PI,0,0], Rectangle.new(V2[scope.x,Math.sqrt(scope.y*scope.y+(scope.z/2.0)*(scope.z/2.0))]) ]
-		end
+		def componentFront; [ V3._0, V3[Math.atan2(scope.z/2.0,Float(scope.y))*180/Math::PI,0,0], Rectangle.new(V2[scope.x,Math.sqrt(scope.y*scope.y+(scope.z/2.0)*(scope.z/2.0))]) ]; end
 
-		def componentBack()
-			[ V3[scope.x,0,scope.z], V3[Math.atan2(scope.z/2.0,Float(scope.y))*180/Math::PI,180,0], Rectangle.new(V2[scope.x,Math.sqrt(scope.y*scope.y+(scope.z/2.0)*(scope.z/2.0))]) ]
-		end
+		def componentBack; [ V3[scope.x,0,scope.z], V3[Math.atan2(scope.z/2.0,Float(scope.y))*180/Math::PI,180,0], Rectangle.new(V2[scope.x,Math.sqrt(scope.y*scope.y+(scope.z/2.0)*(scope.z/2.0))]) ]; end
 
-		def componentLeft()
-			[ V3[0,0,scope.z], V3[0,90,0], IsoscelesTriangle.new(V2[scope.z,scope.y]) ]
-		end
+		def componentLeft; [ V3[0,0,scope.z], V3[0,90,0], IsoscelesTriangle.new(V2[scope.z,scope.y]) ]; end
 
-		def componentRight()
-			[ V3[scope.x,0,0], V3[0,-90,0], IsoscelesTriangle.new(V2[scope.z,scope.y]) ]
-		end
+		def componentRight; [ V3[scope.x,0,0], V3[0,-90,0], IsoscelesTriangle.new(V2[scope.z,scope.y]) ]; end
 
 		def component( splitType )
-			if splitType == SideFaces then
+			if splitType == SideFaces
 				[ componentLeft, componentRight ]
-			elsif splitType == MainFaces then
+			elsif splitType == MainFaces
 				[ componentFront, componentBack ]
 			else
 				[ componentFront, componentBack, componentLeft, componentRight ]

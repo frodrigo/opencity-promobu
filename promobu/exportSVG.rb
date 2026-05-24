@@ -58,7 +58,7 @@ module ProcedureBuildingGenerator
 		@@exportSVG = {}
 
 		def exportSVGDef( node, w, h, id )
-			if @@exportSVG[object_id] != node then
+			if @@exportSVG[object_id] != node
 				textureW = @@size[textureFile].x
 				textureH = @@size[textureFile].y
 				node.add_element("svg:pattern", {
@@ -82,13 +82,13 @@ end
 module Shapes
 	class ::Shapes::Shape2D < Shape
 		def exportSVGDef( node )
-			if texture != nil then
+			if texture
 				texture.exportSVGDef( node, scope.x, scope.y, "pattern-#{self.object_id}" )
 			end
 		end
 
 		def exportSVG( node )
-			if texture != nil then
+			if texture
 				texture.exportSVG( node, scope.x, scope.y, "pattern-#{self.object_id}" )
 			end
 		end

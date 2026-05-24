@@ -22,7 +22,7 @@ module Snaps
 		end
 
 		attr_accessor :normal
-	
+
 		def initialize( snap, position, rotation )
 			self.snap = snap
 			self.position = position
@@ -50,7 +50,7 @@ module Snaps
 		def distance( point )
 			(self.normal.x*point.x + self.normal.y*point.y + self.normal.z*point.z + self.d).abs / self.normal.r
 		end
-	
+
 		def projection( point )
 			d = self.normal.x*point.x + self.normal.y*point.y + self.normal.z*point.z + self.d / self.normal.r
 			# Move point of d in normal dir
@@ -63,20 +63,20 @@ module Snaps
 
 		include Singleton
 
-		def initialize()
+		def initialize
 			self.snapPlanes = {}
 		end
 
 		def <<( snapPlane )
 			snapGroup = snapPlane.snap.snapGroup
-			if not self.snapPlanes.key?(snapGroup) then
+			unless self.snapPlanes.key?(snapGroup)
 				self.snapPlanes[snapGroup] = []
 			end
 			self.snapPlanes[snapGroup] << snapPlane
 		end
 
 		def parallel( snapGroup, vector )
-			if self.snapPlanes.key?(snapGroup) then
+			if self.snapPlanes.key?(snapGroup)
 				snapPlanes[snapGroup].select{ |snapPlane|
 					snapPlane.parallel?( vector )
 				}
@@ -91,7 +91,7 @@ module Snaps
 			min = nil
 			parallel( snapGroup, vector ).each{ |snapPlane|
 				m = snapPlane.distance( position )
-				if m <= snapPlane.snap.snapSize and ( min == nil or m < min ) then
+				if m <= snapPlane.snap.snapSize && ( min.nil? || m < min )
 					minPlane = snapPlane
 					minPlaneProjection = snapPlane.projection( position )
 					min = m

@@ -30,18 +30,18 @@ module ProcedureBuildingGenerator
 			# #{ruleId}
 			euler = euler2AxisAngle( rotation )
 			trans = {}
-			if position.x != 0 or position.y != 0 or position.z !=0  then
+			if position.x != 0 || position.y != 0 || position.z != 0
 				trans["translation"] = "#{position.x} #{position.y} #{position.z}"
 			end
-			if euler != [V3._0,0] then
+			if euler != [V3._0,0]
 				trans["rotation"] = "#{euler[0].x} #{euler[0].y} #{euler[0].z} #{euler[1]}"
 			end
-			if trans != {} then
+			if trans != {}
 				transform = node.add_element("Transform", trans)
 			else
 				transform = node
 			end
-			if subNodes == [] then
+			if subNodes.empty?
 				transform.add_text( "<!--#{ruleId}-->" )
 				shape.exportX3D( transform )
 			else
@@ -57,7 +57,7 @@ end
 module Shapes
 	class ::Shapes::Shape
 		def exportX3D( node )
-			if self.texture then
+			if self.texture
 				appearance = node.add_element( "Appearance" )
 				appearance.add_element( "ImageTexture", {"url"=>"#{self.texture.textureFile}"} )
 			end
