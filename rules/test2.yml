@@ -1,0 +1,45 @@
+# Rule set: test2 — cylinder + box + tiled texture test
+# Loaded by promobu/rules_loader.rb  →  RulesLoader.load("rules/test2.yml")
+#
+# Notes:
+#   scope: { dx:, dy:, dz: }  →  Scope.new(V3[…]) additive form
+#   sub_context: [ actions ]   →  SubContext.new([…])
+
+textures:
+  wall: { type: tiled, file: canary/wall.png, sx: 0.2, sy: 0.5 }
+
+rules:
+  - name: root
+    actions:
+      - scope: { dx: 2, dy: 2, dz: 2 }
+      - sub_context:
+          - translation: { x: 1, y: 1, z: 0 }
+          - instantiate: [Cylinder, b]
+      - instantiate: [Cylinder, b]
+
+  - name: b
+    actions:
+      - scope: { dx: 1, dy: 1, dz: 1 }
+      - instantiate: [Box, c]
+
+  - name: c
+    actions:
+      - component: { faces: side, rules: [d] }
+
+  - name: d
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 0.25, rule: e }
+            - { rel: 1,    rule: f }
+
+  - name: f
+    actions:
+      - split:
+          axis: x
+          repeat: { size: 0.25, rule: g }
+
+  - name: g
+    actions:
+      - texture: wall

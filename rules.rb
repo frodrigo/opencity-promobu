@@ -1,25 +1,27 @@
-require 'promobu/procedural-building-generator.rb'
+require_relative 'promobu/procedural-building-generator'
 include ProcedureBuildingGenerator
 
-require 'promobu/shapes.rb'
+require_relative 'promobu/shapes'
 include Shapes
 
-require 'promobu/rules.rb'
+require_relative 'promobu/rules'
 include Rules
 
-require 'promobu/faces.rb'
+require_relative 'promobu/faces'
 include Faces
 
-require 'promobu/snaps.rb'
+require_relative 'promobu/snaps'
 include Snaps
 
-require 'promobu/exportX3D.rb'
-require 'promobu/exportAC3D.rb'
-require 'promobu/exportSVG.rb'
-require 'promobu/optimize.rb'
+require_relative 'promobu/exportX3D'
+require_relative 'promobu/exportAC3D'
+require_relative 'promobu/exportSVG'
+require_relative 'promobu/exportGLTF'
+require_relative 'promobu/optimize'
+require_relative 'promobu/rules_loader'
 
-def test1
-	rulesSet = RulesSet.new()
+# root = Node.new( nil, "root", Box.new(V3[5,3,4]), V3._0, V3._0 )
+# RulesLoader.load( "rules/canary.yml" ).apply( [root] )
 
 	rulesSet << Rule.new( "root", nil, [Component.new(SideFaces,["d"])] )
 	rulesSet << Rule.new( "d", nil, [Split.new(XAxis,SplitElement.new([[AbsoluteSize.new(0.25),"e"],[RelativeSize.new(1),"f"]]))] )
@@ -344,4 +346,5 @@ testCanary.apply( [root] )
 #root = Optimize::optimize( root )
 
 #ExportX3D::export( root, "out.x3d" )
-ExportAC3D::export( root, "out.ac" )
+# ExportAC3D::export( root, "out.ac" )
+ExportGLTF::export( root, "out.glb" )

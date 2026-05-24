@@ -1,0 +1,15 @@
+# Rule set: test1 — minimal side-face split test
+# Loaded by promobu/rules_loader.rb  →  RulesLoader.load("rules/test1.yml")
+
+rules:
+  - name: root
+    actions:
+      - component: { faces: side, rules: [d] }
+
+  - name: d
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 0.25, rule: e }
+            - { rel: 1,    rule: f }

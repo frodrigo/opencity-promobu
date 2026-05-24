@@ -1,0 +1,133 @@
+# Rule set: canary building
+# Loaded by promobu/rules_loader.rb  →  RulesLoader.load("rules/canary.yml")
+
+textures:
+  wall:        { type: tiled,   file: canary/wall.png,        sx: 0.2,  sy: 0.5                }
+  wall_bottom: { type: tiled,   file: canary/wall-bottom.png, sx: 0.5,  sy: 0.16               }
+  roof:        { type: tiled,   file: canary/roof.png,        sx: 2.0,  sy: 1.67705098312484    }
+
+rules:
+  - name: delete
+    actions:
+      - instantiate: [Empty, ~]
+
+  - name: root
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 1,   rule: border1 }
+            - { rel: 1,   rule: center  }
+            - { abs: 1,   rule: border1 }
+
+  - name: border1
+    actions:
+      - split:
+          axis: y
+          elements:
+            - { rel: 1,   rule: border2 }
+            - { abs: 0.7, rule: delete  }
+
+  - name: border2
+    actions:
+      - split:
+          axis: z
+          elements:
+            - { abs: 0.1, rule: delete  }
+            - { rel: 1,   rule: border3 }
+            - { abs: 0.1, rule: delete  }
+
+  - name: border3
+    actions:
+      - component: { faces: side, rules: [levels] }
+      - component: { faces: top,  rules: [roof]   }
+
+  - name: center
+    actions:
+      - component: { faces: side, rules: [wallc] }
+      - component: { faces: top,  rules: [roof]  }
+
+  - name: wallc
+    actions:
+      - split:
+          axis: y
+          elements:
+            - { abs: 1,   rule: groundFloor }
+            - { snap: { name: level, size: 0.5 } }
+            - { rel: 1,   rule: levels }
+
+  - name: groundFloor
+    condition: front_face
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { rel: 1,   rule: level    }
+            - { snap: { name: entrance, size: 0.5 } }
+            - { abs: 1.5, rule: door     }
+            - { snap: { name: entrance, size: 0.5 } }
+            - { rel: 1,   rule: level    }
+
+  - name: groundFloor
+    actions:
+      - i: level
+
+  - name: levels
+    actions:
+      - split:
+          axis: y
+          repeat: { size: 1, rule: level, snap: { name: level, size: 0.5 }, last: level }
+
+  - name: level
+    condition: { scope_min: { x: 1, y: 0.8 } }
+    actions:
+      - split:
+          axis: x
+          repeat: { size: 0.8, rule: window, last: entrance }
+
+  - name: level
+    actions:
+      - i: wb
+
+  - name: window
+    actions:
+      - split:
+          axis: y
+          elements:
+            - { abs: 0.3, rule: wb }
+            - { rel: 1,   rule: wc }
+            - { abs: 0.2, rule: wb }
+
+  - name: wc
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 0.2, rule: wb }
+            - { rel: 1,   rule: ww }
+            - { abs: 0.2, rule: wb }
+
+  - name: roof
+    actions:
+      - roof: { type: gabled, rule: roofShape }
+
+  - name: roofShape
+    actions:
+      - component: { faces: main, rules: [roofp] }
+      - component: { faces: side, rules: [wb]    }
+
+  - name: door
+    actions:
+      - texture: { type: adapted, file: canary/door.png }
+
+  - name: ww
+    actions:
+      - texture: { type: adapted, file: canary/window1.png }
+
+  - name: roofp
+    actions:
+      - texture: roof
+
+  - name: wb
+    actions:
+      - texture: wall

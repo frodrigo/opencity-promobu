@@ -1,0 +1,440 @@
+# Rule set: NYC 1920 building
+# Loaded by promobu/rules_loader.rb  →  RulesLoader.load("rules/nyc1920.yml")
+# Notes on tiled sx values computed from original Ruby expressions:
+#   18*0.1/12  = 0.15
+#   13/55      = 0   (integer division in original Ruby)
+#   47*0.1/9   ≈ 0.5222222222222222
+#   83*0.1/29  ≈ 0.2862068965517241
+
+rules:
+  - name: delete
+    actions:
+      - instantiate: [Empty, ~]
+
+  - name: root
+    actions:
+      - split:
+          axis: y
+          elements:
+            - { abs: 2.5, rule: groundLevel0      }
+            - { abs: 0.3, rule: groundLevelFrise0  }
+            - { abs: 0.9, rule: frise0             }
+            - { abs: 0.1, rule: frise0frise0       }
+            - { rel: 1,   rule: MainLevels         }
+            - { abs: 1.3, rule: LastMainLevel      }
+            - { abs: 0.1, rule: topFrise0frise00   }
+            - { abs: 1.1, rule: topFrise0          }
+            - { abs: 0.3, rule: roof0              }
+            - { abs: 1.2, rule: balcon0            }
+
+  # ── Ground Level ────────────────────────────────────────────────────────────
+
+  - name: groundLevel0
+    actions:
+      - component: { faces: side, rules: [groundLevel0face] }
+
+  - name: groundLevel0face
+    condition: front_face
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 2.5, rule: groundLevel0BigDoor }
+            - rel: 1
+              repeat:
+                size: 2
+                elements:
+                  - { abs: 1.8, rule: groundLevel0Door2Door       }
+                  - { rel: 1,   rule: groundLevel0Door2DoorColumn }
+            - { abs: 1.8, rule: groundLevel0Door2Door    }
+            - { abs: 2.5, rule: groundLevel0BigDoor      }
+
+  - name: groundLevel0face
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { rel: 1, rule: groundLevel0Door2DoorColumn }
+            - rel: 1
+              repeat:
+                size: 2
+                elements:
+                  - { abs: 1.8, rule: groundLevel0Door2Door       }
+                  - { rel: 1,   rule: groundLevel0Door2DoorColumn }
+
+  # Ground Level BigDoor — extend depth, push back, instantiate
+  - name: groundLevel0BigDoor
+    actions:
+      - scope:       { z: 0.4 }
+      - translation: { x: 0, y: 0, z: -0.4 }
+      - instantiate: [Box, BigDoor0]
+
+  - name: BigDoor0
+    actions:
+      - component: { faces: front, rules: [groundLevel0Door2]            }
+      - component: { faces: right, rules: [groundLevel0Door2DoorColumn2] }
+      - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2] }
+
+  # Ground Level Door
+  - name: groundLevel0Door2
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 0.5, rule: groundLevel0Door2DoorColumn }
+            - { rel: 1,   rule: groundLevel0Door2Door       }
+            - { abs: 0.5, rule: groundLevel0Door2DoorColumn }
+
+  # Ground Level Column
+  - name: groundLevel0Door2DoorColumn
+    actions:
+      - scope:       { z: 0.2 }
+      - translation: { x: 0, y: 0, z: -0.2 }
+      - instantiate: [Box, groundLevel0Door2DoorColumn1]
+
+  - name: groundLevel0Door2DoorColumn1
+    actions:
+      - component: { faces: front, rules: [groundLevel0Door2DoorColumn2] }
+      - component: { faces: right, rules: [groundLevel0Door2DoorColumn2] }
+      - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2] }
+
+  - name: groundLevelFrise0
+    actions:
+      - scope:       { dx: 0.4, dz: 0.4 }
+      - translation: { x: -0.2, y: 0, z: -0.2 }
+      - i: groundLevelFrise1
+
+  - name: groundLevelFrise1
+    actions:
+      - component: { faces: all, rules: [groundLevelFriseFace] }
+
+  # ── Main Levels ─────────────────────────────────────────────────────────────
+
+  - name: MainLevels
+    actions:
+      - split:
+          axis: y
+          repeat: { size: 1, rule: MainLevel0 }
+
+  - name: MainLevel0
+    actions:
+      - component: { faces: side, rules: [MainLevelFace0] }
+
+  - name: MainLevelFace0
+    condition: front_face
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 2.5, rule: MainLevel0Border }
+            - rel: 1
+              repeat:
+                size: 2
+                elements:
+                  - { abs: 1.8, rule: MainLevel0CenterWindows2 }
+                  - { rel: 1,   rule: MainLevel0CenterColumn   }
+            - { abs: 1.8, rule: MainLevel0CenterWindows2 }
+            - { abs: 2.5, rule: MainLevel0Border         }
+
+  - name: MainLevel0Border
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 0.5, rule: MainLevel0BorderWall     }
+            - { rel: 1,   rule: MainLevel0BorderWindows2 }
+            - { abs: 0.5, rule: MainLevel0BorderWall     }
+
+  - name: MainLevelFace0
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 0.5, rule: MainLevel0BorderWall }
+            - rel: 1
+              repeat:
+                size: 2.5
+                elements:
+                  - { rel: 1,   rule: MainLevel0BorderWindows2 }
+                  - { abs: 0.5, rule: MainLevel0BorderWall     }
+
+  # ── Last Main Level ─────────────────────────────────────────────────────────
+
+  - name: LastMainLevel
+    actions:
+      - component: { faces: side, rules: [LastMainLevelFace0] }
+
+  - name: LastMainLevelFace0
+    condition: front_face
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 2.5, rule: LastMainLevel0Border }
+            - rel: 1
+              repeat:
+                size: 2
+                elements:
+                  - { abs: 1.8, rule: LastMainLevel0CenterWindows2 }
+                  - { rel: 1,   rule: LastMainLevel0CenterColumn   }
+            - { abs: 1.8, rule: LastMainLevel0CenterWindows2 }
+            - { abs: 2.5, rule: LastMainLevel0Border         }
+
+  - name: LastMainLevel0Border
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 0.5, rule: LastMainLevel0BorderWall     }
+            - { rel: 1,   rule: LastMainLevel0BorderWindows2 }
+            - { abs: 0.5, rule: LastMainLevel0BorderWall     }
+
+  - name: LastMainLevelFace0
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 0.5, rule: LastMainLevel0BorderWall }
+            - rel: 1
+              repeat:
+                size: 2.5
+                elements:
+                  - { rel: 1,   rule: LastMainLevel0BorderWindows2 }
+                  - { abs: 0.5, rule: LastMainLevel0BorderWall     }
+
+  # ── Frise ───────────────────────────────────────────────────────────────────
+
+  - name: frise0
+    actions:
+      - component: { faces: side, rules: [frise0face] }
+
+  - name: frise0face
+    actions:
+      - split:
+          axis: y
+          elements:
+            - { rel: 1,   rule: frise0windows }
+            - { abs: 0.1, rule: frise0wall    }
+
+  - name: frise0windows
+    condition: front_face
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 2.5, rule: frise0windwosBorder }
+            - rel: 1
+              repeat:
+                size: 2
+                elements:
+                  - { abs: 1.8, rule: frise0windwosWindows2 }
+                  - { rel: 1,   rule: frise0windwosBlason   }
+            - { abs: 1.8, rule: frise0windwosWindows2 }
+            - { abs: 2.5, rule: frise0windwosBorder   }
+
+  - name: frise0windwosBorder
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 0.5, rule: frise0windwosBorderSatus }
+            - { rel: 1,   rule: frise0windwosWindows2    }
+            - { abs: 0.5, rule: frise0windwosBorderSatus }
+
+  - name: frise0windows
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { rel: 1, rule: frise0windwosBlason }
+            - rel: 1
+              repeat:
+                size: 2
+                elements:
+                  - { abs: 1.8, rule: frise0windwosWindows2 }
+                  - { rel: 1,   rule: frise0windwosBlason   }
+
+  # ── Top Frise ────────────────────────────────────────────────────────────────
+
+  - name: topFrise0
+    actions:
+      - component: { faces: side, rules: [topFrise0face] }
+
+  - name: topFrise0face
+    actions:
+      - split:
+          axis: y
+          elements:
+            - { rel: 1,   rule: topFrise0windows0 }
+            - { abs: 0.3, rule: topFrise0frise1   }
+
+  - name: topFrise0windows0
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 0.4, rule: topFrise0windows0box }
+            - rel: 1
+              repeat:
+                size: 1
+                elements:
+                  - { rel: 1,   rule: topFrise0windows0window }
+                  - { abs: 0.4, rule: topFrise0windows0box    }
+
+  # ── Balcon ───────────────────────────────────────────────────────────────────
+
+  - name: balcon0
+    actions:
+      - component: { faces: side, rules: [balcon0face] }
+
+  - name: balcon0face
+    actions:
+      - split:
+          axis: x
+          elements:
+            - { abs: 0.3, rule: balcon0corner }
+            - { abs: 1,   rule: balcon0join   }
+            - rel: 1
+              repeat:
+                size: 1.3
+                elements:
+                  - { rel: 1, rule: balcon0column }
+                  - { abs: 1, rule: balcon0join   }
+            - { abs: 0.3, rule: balcon0corner }
+
+  # ── Frise borders (scope-extruded boxes) ────────────────────────────────────
+
+  - name: frise0frise0
+    actions:
+      - scope:       { dx: 0.4, dz: 0.4 }
+      - translation: { x: -0.2, y: 0, z: -0.2 }
+      - i: frise0frise1
+
+  - name: frise0frise1
+    actions:
+      - component: { faces: all, rules: [frise0friseFace] }
+
+  - name: topFrise0frise00
+    actions:
+      - scope:       { dx: 0.4, dz: 0.4 }
+      - translation: { x: -0.2, y: 0, z: -0.2 }
+      - i: topFrise0frise01
+
+  - name: topFrise0frise01
+    actions:
+      - component: { faces: all, rules: [topFrise0frise01Face] }
+
+  - name: roof0
+    actions:
+      - scope:       { dx: 0.8, dz: 0.8 }
+      - translation: { x: -0.4, y: 0, z: -0.4 }
+      - i: roof1
+
+  - name: roof1
+    actions:
+      - component: { faces: all, rules: [roof0Face] }
+
+  # Duplicate in original source — preserved as-is
+  - name: balcon0
+    actions:
+      - component: { faces: side, rules: [balcon0face] }
+
+  # ── Textures ─────────────────────────────────────────────────────────────────
+
+  - name: groundLevel0Door2DoorColumn2
+    actions:
+      - texture: { type: adapted, file: nyc1920/ground-column.png }
+
+  - name: groundLevel0Door2Door
+    actions:
+      - texture: { type: adapted, file: nyc1920/ground-door.png }
+
+  - name: groundLevelFriseFace
+    actions:
+      - texture: { type: adapted, file: nyc1920/ground-frise.png }
+
+  - name: MainLevel0CenterColumn
+    actions:
+      - texture: { type: adapted, file: nyc1920/main-wall.png }
+
+  - name: MainLevel0BorderWall
+    actions:
+      - texture: { type: adapted, file: nyc1920/main-wall.png }
+
+  - name: MainLevel0BorderWindows2
+    actions:
+      - texture: { type: adapted, file: nyc1920/main-windows2.png }
+
+  - name: MainLevel0CenterWindows2
+    actions:
+      - texture: { type: adapted, file: nyc1920/main-windows2c.png }
+
+  - name: LastMainLevel0CenterColumn
+    actions:
+      - texture: { type: adapted, file: nyc1920/main-wall.png }
+
+  - name: LastMainLevel0BorderWall
+    actions:
+      - texture: { type: adapted, file: nyc1920/main-wall.png }
+
+  - name: LastMainLevel0BorderWindows2
+    actions:
+      - texture: { type: adapted, file: nyc1920/main-last-windows2.png }
+
+  - name: LastMainLevel0CenterWindows2
+    actions:
+      - texture: { type: adapted, file: nyc1920/main-last-windows2c.png }
+
+  - name: frise0friseFace
+    actions:
+      - texture: { type: tiled, file: nyc1920/frise-frise.png,      sx: 0.15,               sy: 0.1 }
+
+  - name: frise0windwosWindows2
+    actions:
+      - texture: { type: adapted, file: nyc1920/frise-windows2.png }
+
+  - name: frise0windwosBorderSatus
+    actions:
+      - texture: { type: adapted, file: nyc1920/frise-status.png }
+
+  - name: frise0windwosBlason
+    actions:
+      - texture: { type: adapted, file: nyc1920/frise-blason.png }
+
+  - name: frise0wall
+    # Original Ruby: TiledTexture.new("nyc1920/wall.png", 13/55, 1)
+    # 13/55 in Ruby is integer division → 0
+    actions:
+      - texture: { type: tiled, file: nyc1920/wall.png,             sx: 0,                  sy: 1   }
+
+  - name: topFrise0frise01Face
+    actions:
+      - texture: { type: tiled, file: nyc1920/top-frise-frise0.png, sx: 0.5222222222222222,  sy: 0.1 }
+
+  - name: topFrise0frise1
+    actions:
+      - texture: { type: tiled, file: nyc1920/top-frise-frise1.png, sx: 0.2862068965517241,  sy: 0.1 }
+
+  - name: topFrise0windows0box
+    actions:
+      - texture: { type: adapted, file: nyc1920/top-frise-box.png }
+
+  - name: topFrise0windows0window
+    actions:
+      - texture: { type: adapted, file: nyc1920/top-frise-window.png }
+
+  - name: roof0Face
+    actions:
+      - texture: { type: adapted, file: nyc1920/roof-frise.png }
+
+  - name: balcon0corner
+    actions:
+      - texture: { type: adapted, file: nyc1920/balcon-corner.png }
+
+  - name: balcon0join
+    actions:
+      - texture: { type: adapted, file: nyc1920/balcon-join.png }
+
+  - name: balcon0column
+    actions:
+      - texture: { type: adapted, file: nyc1920/balcon-column.png }
