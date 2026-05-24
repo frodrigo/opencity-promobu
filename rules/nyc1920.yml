@@ -429,12 +429,12 @@ rules:
 
   - name: balcon0corner
     actions:
-      - texture: { type: adapted, file: nyc1920/balcon-corner.png }
+      - texture: { type: adapted, file: nyc1920/balcon-corner.png, double_side: true }
 
   - name: balcon0join
     actions:
-      - texture: { type: adapted, file: nyc1920/balcon-join.png }
+      - texture: { type: adapted, file: nyc1920/balcon-join.png, double_side: true }
 
   - name: balcon0column
     actions:
-      - texture: { type: adapted, file: nyc1920/balcon-column.png }
+      - texture: { type: adapted, file: nyc1920/balcon-column.png, double_side: true }

@@ -83,19 +83,21 @@ module ExportGLTF
     def material_for( texture )
       return default_material if texture.nil?
       key = texture.textureFile
-      @mat_cache[key] ||= begin
+      cache_key = [key, texture.double_side]
+      @mat_cache[cache_key] ||= begin
         img  = embed_image( key )
         samp = push_to( @samplers, { wrapS: 10497, wrapT: 10497 } )  # REPEAT/REPEAT
         tex  = push_to( @textures, { sampler: samp, source: img } )
-        push_to( @materials, {
+        mat = {
           name: key,
           pbrMetallicRoughness: {
             baseColorTexture: { index: tex },
             metallicFactor:   0.0,
             roughnessFactor:  1.0
-          },
-          doubleSided: true
-        })
+          }
+        }
+        mat[:doubleSided] = true if texture.double_side
+        push_to( @materials, mat )
       end
     end
 
@@ -151,8 +153,7 @@ module ExportGLTF
           baseColorFactor: [0.8, 0.8, 0.8, 1.0],
           metallicFactor:  0.0,
           roughnessFactor: 1.0
-        },
-        doubleSided: true
+        }
       })
     end
 

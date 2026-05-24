@@ -255,13 +255,15 @@ module ProcedureBuildingGenerator
 
 	class Texture
 		attr_accessor :textureFile
+		attr_accessor :double_side
 
 		def initialize( textureFile )
 			self.textureFile = textureFile
+			self.double_side = false
 		end
 
 		def eql?( other )
-			self.class == other.class && self.textureFile == other.textureFile
+			self.class == other.class && self.textureFile == other.textureFile && self.double_side == other.double_side
 		end
 	end
 

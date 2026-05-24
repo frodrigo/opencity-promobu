@@ -25,8 +25,14 @@ module RulesLoader
   def self.build_textures( map )
     map.transform_values { |t|
       case t[:type]
-      when 'tiled'   then TiledTexture.new(   t[:file], t[:sx], t[:sy] )
-      when 'adapted' then AdaptedTexture.new( t[:file] )
+      when 'tiled'
+        tex = TiledTexture.new( t[:file], t[:sx], t[:sy] )
+        tex.double_side = true if t[:double_side]
+        tex
+      when 'adapted'
+        tex = AdaptedTexture.new( t[:file] )
+        tex.double_side = true if t[:double_side]
+        tex
       else raise "Unknown texture type: #{t[:type].inspect} in rules YAML"
       end
     }
@@ -228,8 +234,14 @@ module RulesLoader
       }
     when Hash
       case value[:type].to_s
-      when 'tiled'   then TiledTexture.new(   value[:file].to_s, value[:sx].to_f, value[:sy].to_f )
-      when 'adapted' then AdaptedTexture.new( value[:file].to_s )
+      when 'tiled'
+        t = TiledTexture.new( value[:file].to_s, value[:sx].to_f, value[:sy].to_f )
+        t.double_side = true if value[:double_side]
+        t
+      when 'adapted'
+        t = AdaptedTexture.new( value[:file].to_s )
+        t.double_side = true if value[:double_side]
+        t
       else raise "Unknown texture type in action: #{value[:type].inspect}"
       end
     else
