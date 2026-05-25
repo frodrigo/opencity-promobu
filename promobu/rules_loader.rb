@@ -14,6 +14,7 @@ module RulesLoader
   #
   def self.load( path )
     doc      = YAML.load_file( path, symbolize_names: true )
+    check_keys!( doc, %i[rules textures], "document root" )
     textures = build_textures( doc[:textures] || {} )
     rs       = RulesSet.new
     ( doc[:rules] || [] ).each { |r| rs << build_rule( r, textures ) }
@@ -22,8 +23,16 @@ module RulesLoader
 
   # ── private helpers ────────────────────────────────────────────────────────
 
+  # Raise if +hash+ contains keys outside +allowed+.
+  def self.check_keys!( hash, allowed, context )
+    unknown = hash.keys - allowed
+    raise "Unknown key(s) #{unknown.map(&:inspect).join(', ')} in #{context}" unless unknown.empty?
+  end
+  private_class_method :check_keys!
+
   def self.build_textures( map )
     map.transform_values { |t|
+      check_keys!( t, %i[type file sx sy double_side], "texture" )
       case t[:type]
       when 'tiled'
         tex = TiledTexture.new( t[:file], t[:sx], t[:sy] )
@@ -40,6 +49,7 @@ module RulesLoader
   private_class_method :build_textures
 
   def self.build_rule( r, textures )
+    check_keys!( r, %i[name condition actions], "rule '#{r[:name]}'" )
     cond    = build_condition( r[:condition] )
     actions = ( r[:actions] || [] ).flat_map { |a| build_action( a, textures ) }
     Rule.new( r[:name].to_s, cond, actions )
@@ -62,8 +72,10 @@ module RulesLoader
     when 'not_last'
       proc { |node| !node.repeat_count.nil? && node.repeat_index < node.repeat_count - 1 }
     when Hash
+      check_keys!( c, %i[scope_min], "condition" )
       if c[:scope_min]
         s = c[:scope_min]
+        check_keys!( s, %i[x y], "scope_min condition" )
         x_min = ( s[:x] || 0 ).to_f
         y_min = ( s[:y] || 0 ).to_f
         proc { |node| node.shape.scope.x >= x_min && node.shape.scope.y >= y_min }
@@ -107,9 +119,11 @@ module RulesLoader
 
     case key
     when :split
+      check_keys!( value, %i[axis elements repeat], "split action" )
       [ build_split( value, textures ) ]
 
     when :component
+      check_keys!( value, %i[faces rules], "component action" )
       face_cls = FACE_MAP.fetch( value[:faces].to_s ) {
         raise "Unknown face selector: #{value[:faces].inspect}"
       }
@@ -119,6 +133,7 @@ module RulesLoader
       [ I.new( value.to_s ) ]
 
     when :roof
+      check_keys!( value, %i[type rule], "roof action" )
       roof_type = case value[:type].to_s
                   when 'gabled' then GabledRoof
                   else raise "Unknown roof type: #{value[:type].inspect}"
@@ -133,9 +148,11 @@ module RulesLoader
       [ Instantiate.new( shape_cls, rule_name ) ]
 
     when :scope
+      check_keys!( value, %i[x y z dx dy dz], "scope action" )
       [ build_scope( value ) ]
 
     when :translation
+      check_keys!( value, %i[x y z], "translation action" )
       v = value
       [ Translation.new( V3[ (v[:x] || 0).to_f, (v[:y] || 0).to_f, (v[:z] || 0).to_f ] ) ]
 
@@ -144,8 +161,7 @@ module RulesLoader
       [ SubContext.new( inner ) ]
 
     when :texture
-      tex = resolve_texture( value, textures )
-      [ BindTexture.new( tex ) ]
+      [ BindTexture.new( resolve_texture( value, textures ) ) ]
 
     else
       raise "Unknown action key: #{key.inspect}"
@@ -213,8 +229,10 @@ module RulesLoader
   def self.build_split_element( elements, textures )
     parts = elements.map { |e|
       if e[:snap]
+        check_keys!( e, %i[snap], "split element (snap)" )
         Snap.new( e[:snap][:name].to_s, e[:snap][:size].to_f )
       else
+        check_keys!( e, %i[abs rel rule repeat condition], "split element" )
         size = e[:abs] ? AbsoluteSize.new( e[:abs].to_f ) : RelativeSize.new( e[:rel].to_f )
         # The rule slot may be either a plain rule name or an inline SplitRepeat
         sub  = e[:repeat] ? build_split_repeat( e[:repeat], textures ) : e[:rule].to_s
@@ -227,6 +245,7 @@ module RulesLoader
   private_class_method :build_split_element
 
   def self.build_split_repeat( r, textures = {} )
+    check_keys!( r, %i[size rule elements snap last], "split repeat" )
     snap = r[:snap] ? Snap.new( r[:snap][:name].to_s, r[:snap][:size].to_f ) : nil
     last = r[:last]&.to_s
     # The sub-componant may be a plain rule name or an inline SplitElement
@@ -242,6 +261,7 @@ module RulesLoader
         raise "Undefined texture key: #{value.inspect}"
       }
     when Hash
+      check_keys!( value, %i[type file sx sy double_side], "texture action" )
       case value[:type].to_s
       when 'tiled'
         t = TiledTexture.new( value[:file].to_s, value[:sx].to_f, value[:sy].to_f )
