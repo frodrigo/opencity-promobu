@@ -16,10 +16,10 @@ rules:
       - split:
           axis: y
           elements:
-            - { abs: 1.2, rule: groundLevel0        }
-            - { abs: 1,   rule: groundLevelOrnement  }
-            - { rel: 3,   rule: MainLevels           }
-            - { rel: 5,   rule: UpperLevels0         }
+            - { abs: 1.2, rule: groundLevel0 }
+            - { abs: 1,   rule: groundLevelOrnement }
+            - { rel: 3,   rule: MainLevels }
+            - { rel: 5,   rule: UpperLevels0 }
 
   - name: groundLevelOrnement
     actions:
@@ -32,9 +32,9 @@ rules:
       - split:
           axis: x
           elements:
-            - { abs: 1, rule: delete       }
+            - { abs: 1, rule: delete }
             - { rel: 1, rule: groundLevel1 }
-            - { abs: 1, rule: delete       }
+            - { abs: 1, rule: delete }
 
   - name: groundLevel1
     actions:
@@ -42,7 +42,7 @@ rules:
           axis: z
           elements:
             - { rel: 1, rule: groundLevel2 }
-            - { abs: 1, rule: delete       }
+            - { abs: 1, rule: delete }
 
   - name: groundLevel2
     actions:
@@ -59,7 +59,7 @@ rules:
                 size: 1
                 elements:
                   - { abs: 0.4, rule: Column0 }
-                  - { rel: 1,   rule: delete  }
+                  - { rel: 1,   rule: delete }
             - { abs: 0.4, rule: Column0 }
 
   # Fix scope to column dimensions before instantiating
@@ -97,7 +97,7 @@ rules:
   - name: MainLevels
     actions:
       - component: { faces: side, rules: [MainLevelsFaces] }
-      - component: { faces: top,  rules: [Roof]            }
+      - component: { faces: top,  rules: [Roof] }
 
   - name: MainLevelsFaces
     actions:
@@ -105,7 +105,7 @@ rules:
           axis: y
           elements:
             - { rel: 1,   rule: MainLevelsWindows }
-            - { abs: 0.5, rule: Ornement          }
+            - { abs: 0.5, rule: Ornement }
 
   - name: MainLevelsWindows
     actions:
