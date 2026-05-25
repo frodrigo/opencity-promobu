@@ -147,7 +147,7 @@ module Shapes
 	end
 
 	class ::Shapes::Box < Shape3D
-		def componentBottom; [ V3._0, V3[90,0,0], Rectangle.new(V2[scope.x,scope.z]) ]; end
+		def componentBottom; [ V3[0,0,scope.z], V3[-90,0,0], Rectangle.new(V2[scope.x,scope.z]) ]; end
 
 		def componentTop; [ V3[0,scope.y,0], V3[90,0,0], Rectangle.new(V2[scope.x,scope.z]) ]; end
 
