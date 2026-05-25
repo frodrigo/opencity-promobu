@@ -14,17 +14,16 @@ rules:
   - name: root
     actions:
       - split_y:
-          elements:
-            - { abs: 2.5, rule: groundLevel0 }
-            - { abs: 0.3, rule: groundLevelFrise0 }
-            - { abs: 0.9, rule: frise0 }
-            - { abs: 0.1, rule: frise0frise0 }
-            - { rel: 1,   rule: MainLevels }
-            - { abs: 1.3, rule: LastMainLevel }
-            - { abs: 0.1, rule: topFrise0frise00 }
-            - { abs: 1.1, rule: topFrise0 }
-            - { abs: 0.3, rule: roof0 }
-            - { abs: 1.2, rule: balcon0 }
+          - { abs: 2.5, rule: groundLevel0 }
+          - { abs: 0.3, rule: groundLevelFrise0 }
+          - { abs: 0.9, rule: frise0 }
+          - { abs: 0.1, rule: frise0frise0 }
+          - { rel: 1,   rule: MainLevels }
+          - { abs: 1.3, rule: LastMainLevel }
+          - { abs: 0.1, rule: topFrise0frise00 }
+          - { abs: 1.1, rule: topFrise0 }
+          - { abs: 0.3, rule: roof0 }
+          - { abs: 1.2, rule: balcon0 }
 
   # ── Ground Level ────────────────────────────────────────────────────────────
 
@@ -36,10 +35,9 @@ rules:
     condition: front_face
     actions:
       - split_x:
-          elements:
-            - { abs: 2.5, rule: groundLevel0Door2 }
-            - { rel: 1, rule: groundLevel0faceInner }
-            - { abs: 2.5, rule: groundLevel0Door2 }
+          - { abs: 2.5, rule: groundLevel0Door2 }
+          - { rel: 1, rule: groundLevel0faceInner }
+          - { abs: 2.5, rule: groundLevel0Door2 }
 
   - name: groundLevel0faceInner
     actions:
@@ -56,33 +54,28 @@ rules:
   - name: groundLevel0faceInner0Front
     actions:
       - split_x:
-          elements:
-            - rel: 1
-              repeat:
-                size: 2
-                elements:
-                  - { abs: 1.8, rule: groundLevel0Door2Door, condition: not_first }
-                  - { rel: 1,   rule: groundLevel0Door2DoorColumn }
+          - repeat:
+              size: 2
+              elements:
+                - { abs: 1.8, rule: groundLevel0Door2Door, condition: not_first }
+                - { rel: 1,   rule: groundLevel0Door2DoorColumn }
 
   - name: groundLevel0face
     actions:
       - split_x:
-          elements:
-            - rel: 1
-              repeat:
-                size: 2
-                elements:
-                  - { abs: 1.8, rule: groundLevel0Door2Door, condition: not_first }
-                  - { rel: 1, rule: groundLevel0Door2DoorColumn }
+          - repeat:
+              size: 2
+              elements:
+                - { abs: 1.8, rule: groundLevel0Door2Door, condition: not_first }
+                - { rel: 1, rule: groundLevel0Door2DoorColumn }
 
   # Ground Level Door
   - name: groundLevel0Door2
     actions:
       - split_x:
-          elements:
-            - { abs: 0.5, rule: groundLevel0Door2DoorColumn }
-            - { rel: 1,   rule: groundLevel0Door2Door }
-            - { abs: 0.5, rule: groundLevel0Door2DoorColumn }
+          - { abs: 0.5, rule: groundLevel0Door2DoorColumn }
+          - { rel: 1,   rule: groundLevel0Door2Door }
+          - { abs: 0.5, rule: groundLevel0Door2DoorColumn }
 
   # Ground Level Column
   - name: groundLevel0Door2DoorColumn
@@ -112,7 +105,7 @@ rules:
   - name: MainLevels
     actions:
       - split_y:
-          repeat: { size: 1, rule: MainLevel0 }
+          - repeat: { size: 1, rule: MainLevel0 }
 
   - name: MainLevel0
     actions:
@@ -122,10 +115,9 @@ rules:
     condition: front_face
     actions:
       - split_x:
-          elements:
-            - { abs: 2.5, rule: MainLevel0Border }
-            - { rel: 1,   rule: MainLevel0FaceInner }
-            - { abs: 2.5, rule: MainLevel0Border }
+          - { abs: 2.5, rule: MainLevel0Border }
+          - { rel: 1,   rule: MainLevel0FaceInner }
+          - { abs: 2.5, rule: MainLevel0Border }
 
   - name: MainLevel0FaceInner
     actions:
@@ -142,32 +134,27 @@ rules:
   - name: MainLevel0FaceInner0Front
     actions:
       - split_x:
-          elements:
-            - rel: 1
-              repeat:
-                size: 2
-                elements:
-                  - { abs: 1.8, rule: MainLevel0CenterWindows2 }
-                  - { rel: 1,   rule: MainLevel0CenterColumn, condition: not_last }
+          - repeat:
+              size: 2
+              elements:
+                - { abs: 1.8, rule: MainLevel0CenterWindows2 }
+                - { rel: 1,   rule: MainLevel0CenterColumn, condition: not_last }
 
   - name: MainLevel0Border
     actions:
       - split_x:
-          elements:
-            - { abs: 0.5, rule: MainLevel0BorderWall }
-            - { rel: 1,   rule: MainLevel0BorderWindows2 }
-            - { abs: 0.5, rule: MainLevel0BorderWall }
+          - { abs: 0.5, rule: MainLevel0BorderWall }
+          - { rel: 1,   rule: MainLevel0BorderWindows2 }
+          - { abs: 0.5, rule: MainLevel0BorderWall }
 
   - name: MainLevelFace0
     actions:
       - split_x:
-          elements:
-            - rel: 1
-              repeat:
-                size: 2.5
-                elements:
-                  - { rel: 1,   rule: MainLevel0BorderWindows2, condition: not_first }
-                  - { abs: 0.5, rule: MainLevel0BorderWall }
+          - repeat:
+              size: 2.5
+              elements:
+                - { rel: 1,   rule: MainLevel0BorderWindows2, condition: not_first }
+                - { abs: 0.5, rule: MainLevel0BorderWall }
 
   # ── Last Main Level ─────────────────────────────────────────────────────────
 
@@ -179,10 +166,9 @@ rules:
     condition: front_face
     actions:
       - split_x:
-          elements:
-            - { abs: 2.5, rule: LastMainLevel0Border }
-            - { rel: 1,   rule: LastMainLevel0FaceInner }
-            - { abs: 2.5, rule: LastMainLevel0Border }
+          - { abs: 2.5, rule: LastMainLevel0Border }
+          - { rel: 1,   rule: LastMainLevel0FaceInner }
+          - { abs: 2.5, rule: LastMainLevel0Border }
 
   - name: LastMainLevel0FaceInner
     actions:
@@ -199,32 +185,27 @@ rules:
   - name: LastMainLevel0FaceInner0Front
     actions:
       - split_x:
-          elements:
-            - rel: 1
-              repeat:
-                size: 2
-                elements:
-                  - { abs: 1.8, rule: LastMainLevel0CenterWindows2 }
-                  - { rel: 1,   rule: LastMainLevel0CenterColumn, condition: not_last }
+          - repeat:
+              size: 2
+              elements:
+                - { abs: 1.8, rule: LastMainLevel0CenterWindows2 }
+                - { rel: 1,   rule: LastMainLevel0CenterColumn, condition: not_last }
 
   - name: LastMainLevel0Border
     actions:
       - split_x:
-          elements:
-            - { abs: 0.5, rule: LastMainLevel0BorderWall }
-            - { rel: 1,   rule: LastMainLevel0BorderWindows2 }
-            - { abs: 0.5, rule: LastMainLevel0BorderWall }
+          - { abs: 0.5, rule: LastMainLevel0BorderWall }
+          - { rel: 1,   rule: LastMainLevel0BorderWindows2 }
+          - { abs: 0.5, rule: LastMainLevel0BorderWall }
 
   - name: LastMainLevelFace0
     actions:
       - split_x:
-          elements:
-            - rel: 1
-              repeat:
-                size: 2.5
-                elements:
-                  - { rel: 1,   rule: LastMainLevel0BorderWindows2 , condition: not_first }
-                  - { abs: 0.5, rule: LastMainLevel0BorderWall }
+          - repeat:
+              size: 2.5
+              elements:
+                - { rel: 1,   rule: LastMainLevel0BorderWindows2 , condition: not_first }
+                - { abs: 0.5, rule: LastMainLevel0BorderWall }
 
   # ── Frise ───────────────────────────────────────────────────────────────────
 
@@ -235,18 +216,16 @@ rules:
   - name: frise0face
     actions:
       - split_y:
-          elements:
-            - { rel: 1,   rule: frise0windows }
-            - { abs: 0.1, rule: frise0wall }
+          - { rel: 1,   rule: frise0windows }
+          - { abs: 0.1, rule: frise0wall }
 
   - name: frise0windows
     condition: front_face
     actions:
       - split_x:
-          elements:
-            - { abs: 2.5, rule: frise0windwosBorder }
-            - { rel: 1,   rule: frise0windowsInner }
-            - { abs: 2.5, rule: frise0windwosBorder }
+          - { abs: 2.5, rule: frise0windwosBorder }
+          - { rel: 1,   rule: frise0windowsInner }
+          - { abs: 2.5, rule: frise0windwosBorder }
 
   - name: frise0windowsInner
     actions:
@@ -263,32 +242,27 @@ rules:
   - name: frise0windowsInner0Front
     actions:
       - split_x:
-          elements:
-            - rel: 1
-              repeat:
-                size: 2
-                elements:
-                  - { abs: 1.8, rule: frise0windwosWindows2, condition: not_first }
-                  - { rel: 1,   rule: frise0windwosBlason }
+          - repeat:
+              size: 2
+              elements:
+                - { abs: 1.8, rule: frise0windwosWindows2, condition: not_first }
+                - { rel: 1,   rule: frise0windwosBlason }
 
   - name: frise0windwosBorder
     actions:
       - split_x:
-          elements:
-            - { abs: 0.5, rule: frise0windwosBorderSatus }
-            - { rel: 1,   rule: frise0windwosWindows2 }
-            - { abs: 0.5, rule: frise0windwosBorderSatus }
+          - { abs: 0.5, rule: frise0windwosBorderSatus }
+          - { rel: 1,   rule: frise0windwosWindows2 }
+          - { abs: 0.5, rule: frise0windwosBorderSatus }
 
   - name: frise0windows
     actions:
       - split_x:
-          elements:
-            - rel: 1
-              repeat:
-                size: 2
-                elements:
-                  - { abs: 1.8, rule: frise0windwosWindows2, condition: not_first }
-                  - { rel: 1, rule: frise0windwosBlason }
+          - repeat:
+              size: 2
+              elements:
+                - { abs: 1.8, rule: frise0windwosWindows2, condition: not_first }
+                - { rel: 1, rule: frise0windwosBlason }
 
   # ── Top Frise ────────────────────────────────────────────────────────────────
 
@@ -299,20 +273,17 @@ rules:
   - name: topFrise0face
     actions:
       - split_y:
-          elements:
-            - { rel: 1,   rule: topFrise0windows0 }
-            - { abs: 0.3, rule: topFrise0frise1 }
+          - { rel: 1,   rule: topFrise0windows0 }
+          - { abs: 0.3, rule: topFrise0frise1 }
 
   - name: topFrise0windows0
     actions:
       - split_x:
-          elements:
-            - rel: 1
-              repeat:
-                size: 1
-                elements:
-                  - { rel: 1,   rule: topFrise0windows0window, condition: not_first }
-                  - { abs: 0.4, rule: topFrise0windows0box }
+          - repeat:
+              size: 1
+              elements:
+                - { rel: 1,   rule: topFrise0windows0window, condition: not_first }
+                - { abs: 0.4, rule: topFrise0windows0box }
 
   # ── Balcon ───────────────────────────────────────────────────────────────────
 
@@ -323,15 +294,13 @@ rules:
   - name: balcon0face
     actions:
       - split_x:
-          elements:
-            - { abs: 0.3, rule: balcon0corner }
-            - rel: 1
-              repeat:
-                size: 1.3
-                elements:
-                  - { rel: 1, rule: balcon0column, condition: not_first }
-                  - { abs: 1, rule: balcon0join }
-            - { abs: 0.3, rule: balcon0corner }
+          - { abs: 0.3, rule: balcon0corner }
+          - repeat:
+              size: 1.3
+              elements:
+                - { rel: 1, rule: balcon0column, condition: not_first }
+                - { abs: 1, rule: balcon0join }
+          - { abs: 0.3, rule: balcon0corner }
 
   # ── Frise borders (scope-extruded boxes) ────────────────────────────────────
 

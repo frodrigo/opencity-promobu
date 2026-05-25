@@ -29,14 +29,13 @@ rules:
   - name: d
     actions:
       - split_x:
-          elements:
-            - { abs: 0.25, rule: e }
-            - { rel: 1,    rule: f }
+          - { abs: 0.25, rule: e }
+          - { rel: 1,    rule: f }
 
   - name: f
     actions:
       - split_x:
-          repeat: { size: 0.25, rule: g }
+          - repeat: { size: 0.25, rule: g }
 
   - name: g
     actions:

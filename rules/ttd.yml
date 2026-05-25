@@ -14,11 +14,10 @@ rules:
   - name: root
     actions:
       - split_y:
-          elements:
-            - { abs: 1.2, rule: groundLevel0 }
-            - { abs: 1,   rule: groundLevelOrnement }
-            - { rel: 3,   rule: MainLevels }
-            - { rel: 5,   rule: UpperLevels0 }
+          - { abs: 1.2, rule: groundLevel0 }
+          - { abs: 1,   rule: groundLevelOrnement }
+          - { rel: 3,   rule: MainLevels }
+          - { rel: 5,   rule: UpperLevels0 }
 
   - name: groundLevelOrnement
     actions:
@@ -29,17 +28,15 @@ rules:
       - component: { faces: right, rules: [ColumnLine0] }
       - component: { faces: left,  rules: [ColumnLine0] }
       - split_x:
-          elements:
-            - { abs: 1, rule: delete }
-            - { rel: 1, rule: groundLevel1 }
-            - { abs: 1, rule: delete }
+          - { abs: 1, rule: delete }
+          - { rel: 1, rule: groundLevel1 }
+          - { abs: 1, rule: delete }
 
   - name: groundLevel1
     actions:
       - split_z:
-          elements:
-            - { rel: 1, rule: groundLevel2 }
-            - { abs: 1, rule: delete }
+          - { rel: 1, rule: groundLevel2 }
+          - { abs: 1, rule: delete }
 
   - name: groundLevel2
     actions:
@@ -49,14 +46,12 @@ rules:
   - name: ColumnLine0
     actions:
       - split_x:
-          elements:
-            - rel: 1
-              repeat:
-                size: 1
-                elements:
-                  - { abs: 0.4, rule: Column0 }
-                  - { rel: 1,   rule: delete }
-            - { abs: 0.4, rule: Column0 }
+          - repeat:
+              size: 1
+              elements:
+                - { abs: 0.4, rule: Column0 }
+                - { rel: 1,   rule: delete }
+          - { abs: 0.4, rule: Column0 }
 
   # Fix scope to column dimensions before instantiating
   - name: Column0
@@ -71,16 +66,14 @@ rules:
   - name: UpperLevels0
     actions:
       - split_x:
-          elements:
-            - { rel: 1, rule: UpperLevels2 }
-            - { rel: 1, rule: UpperLevels2 }
+          - { rel: 1, rule: UpperLevels2 }
+          - { rel: 1, rule: UpperLevels2 }
 
   - name: UpperLevels2
     actions:
       - split_z:
-          elements:
-            - { rel: 1, rule: UpperLevels3 }
-            - { rel: 1, rule: UpperLevels3 }
+          - { rel: 1, rule: UpperLevels3 }
+          - { rel: 1, rule: UpperLevels3 }
 
   # Randomly shrink height before re-using MainLevels grammar
   - name: UpperLevels3
@@ -96,23 +89,20 @@ rules:
   - name: MainLevelsFaces
     actions:
       - split_y:
-          elements:
-            - { rel: 1,   rule: MainLevelsWindows }
-            - { abs: 0.5, rule: Ornement }
+          - { rel: 1,   rule: MainLevelsWindows }
+          - { abs: 0.5, rule: Ornement }
 
   - name: MainLevelsWindows
     actions:
       - split_y:
-          repeat: { size: 1, rule: Level }
+          - repeat: { size: 1, rule: Level }
 
   - name: Level
     actions:
       - split_x:
-          elements:
-            - { abs: 1, rule: LevelCorner }
-            - rel: 1
-              repeat: { size: 0.5, rule: Window }
-            - { abs: 1, rule: LevelCorner }
+          - { abs: 1, rule: LevelCorner }
+          - repeat: { size: 0.5, rule: Window }
+          - { abs: 1, rule: LevelCorner }
 
   - name: Column2
     actions:

@@ -129,15 +129,8 @@ module RulesLoader
     case key
     when :split_x, :split_y, :split_z
       axis = AXIS_MAP.fetch( key.to_s[-1] ) { raise "Unknown axis in action key: #{key}" }
-      check_keys!( value, %i[elements repeat], "#{key} action" )
-      componant = if value[:elements]
-                    build_split_element( value[:elements], textures )
-                  elsif value[:repeat]
-                    build_split_repeat( value[:repeat], textures )
-                  else
-                    raise "#{key} must have :elements or :repeat"
-                  end
-      [ Split.new( axis, componant ) ]
+      raise "#{key} value must be a list" unless value.is_a?(Array)
+      [ Split.new( axis, build_split_element( value, textures ) ) ]
 
     when :component
       check_keys!( value, %i[faces rules condition], "component action" )
@@ -236,7 +229,7 @@ module RulesLoader
         Snap.new( e[:snap][:name].to_s, e[:snap][:size].to_f )
       else
         check_keys!( e, %i[abs rel rule repeat condition], "split element" )
-        size = e[:abs] ? AbsoluteSize.new( e[:abs].to_f ) : RelativeSize.new( e[:rel].to_f )
+        size = e[:abs] ? AbsoluteSize.new( e[:abs].to_f ) : RelativeSize.new( (e[:rel] || 1).to_f )
         # The rule slot may be either a plain rule name or an inline SplitRepeat
         sub  = e[:repeat] ? build_split_repeat( e[:repeat], textures ) : e[:rule].to_s
         cond = e[:condition] ? build_condition( e[:condition].to_s ) : nil

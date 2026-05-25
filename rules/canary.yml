@@ -14,25 +14,22 @@ rules:
   - name: root
     actions:
       - split_x:
-          elements:
-            - { abs: 1,   rule: border1 }
-            - { rel: 1,   rule: center }
-            - { abs: 1,   rule: border1 }
+          - { abs: 1,   rule: border1 }
+          - { rel: 1,   rule: center }
+          - { abs: 1,   rule: border1 }
 
   - name: border1
     actions:
       - split_y:
-          elements:
-            - { rel: 1,   rule: border2 }
-            - { abs: 0.7, rule: delete }
+          - { rel: 1,   rule: border2 }
+          - { abs: 0.7, rule: delete }
 
   - name: border2
     actions:
       - split_z:
-          elements:
-            - { abs: 0.1, rule: delete }
-            - { rel: 1,   rule: border3 }
-            - { abs: 0.1, rule: delete }
+          - { abs: 0.1, rule: delete }
+          - { rel: 1,   rule: border3 }
+          - { abs: 0.1, rule: delete }
 
   - name: border3
     actions:
@@ -47,21 +44,19 @@ rules:
   - name: wallc
     actions:
       - split_y:
-          elements:
-            - { abs: 1,   rule: groundFloor }
-            - { snap: { name: level, size: 0.5 } }
-            - { rel: 1,   rule: levels }
+          - { abs: 1,   rule: groundFloor }
+          - { snap: { name: level, size: 0.5 } }
+          - { rel: 1,   rule: levels }
 
   - name: groundFloor
     condition: front_face
     actions:
       - split_x:
-          elements:
-            - { rel: 1,   rule: level }
-            - { snap: { name: entrance, size: 0.5 } }
-            - { abs: 1.5, rule: door }
-            - { snap: { name: entrance, size: 0.5 } }
-            - { rel: 1,   rule: level }
+          - { rel: 1,   rule: level }
+          - { snap: { name: entrance, size: 0.5 } }
+          - { abs: 1.5, rule: door }
+          - { snap: { name: entrance, size: 0.5 } }
+          - { rel: 1,   rule: level }
 
   - name: groundFloor
     actions:
@@ -70,13 +65,13 @@ rules:
   - name: levels
     actions:
       - split_y:
-          repeat: { size: 1, rule: level, snap: { name: level, size: 0.5 }, last: level }
+          - repeat: { size: 1, rule: level, snap: { name: level, size: 0.5 }, last: level }
 
   - name: level
     condition: { scope_min: { x: 1, y: 0.8 } }
     actions:
       - split_x:
-          repeat: { size: 0.8, rule: window, last: entrance }
+          - repeat: { size: 0.8, rule: window, last: entrance }
 
   - name: level
     actions:
@@ -85,18 +80,16 @@ rules:
   - name: window
     actions:
       - split_y:
-          elements:
-            - { abs: 0.3, rule: wb }
-            - { rel: 1,   rule: wc }
-            - { abs: 0.2, rule: wb }
+          - { abs: 0.3, rule: wb }
+          - { rel: 1,   rule: wc }
+          - { abs: 0.2, rule: wb }
 
   - name: wc
     actions:
       - split_x:
-          elements:
-            - { abs: 0.2, rule: wb }
-            - { rel: 1,   rule: ww }
-            - { abs: 0.2, rule: wb }
+          - { abs: 0.2, rule: wb }
+          - { rel: 1,   rule: ww }
+          - { abs: 0.2, rule: wb }
 
   - name: roof
     actions:
