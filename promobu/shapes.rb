@@ -90,9 +90,10 @@ module Shapes
 		end
 
 		def split( node, axis, partSizes, snapGroup=nil )
-			absPartSizes = absolutPartSizes( axis.component(scope), partSizes )
+			length = axis.component(scope)
+			absPartSizes = absolutPartSizes( length, partSizes )
 			if snapGroup
-				subDivise( axis, snap(node, axis, snapGroup, absPartSizes) )
+				subDivise( axis, snap(node, axis, snapGroup, absPartSizes, length) )
 			else
 				subDivise( axis, absPartSizes )
 			end
