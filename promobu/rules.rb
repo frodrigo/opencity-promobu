@@ -101,17 +101,22 @@ module Rules
 	class ::Rules::Component < SubNodeGenerator
 		attr_accessor :splitType
 		attr_accessor :ids
+		attr_accessor :condition
 
-		def initialize( splitType, ids )
+		def initialize( splitType, ids, condition=nil )
 			self.splitType = splitType
 			self.ids = ids
+			self.condition = condition
 		end
 
 		def apply( node, shape )
+			return [] if condition && !condition.call( node )
+			components = shape.component( splitType )
+			return [] if components.nil?
 			subNode = []
 			ids_local = ids.dup
 			id = nil
-			shape.component( splitType ).each{ |subShapeArray|
+			components.each{ |subShapeArray|
 				if ids_local.length >= 1
 					id = ids_local.shift
 				end
