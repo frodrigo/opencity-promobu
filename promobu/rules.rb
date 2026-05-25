@@ -36,7 +36,7 @@ module Rules
 				elsif generativePart.is_a?(SubContext)
 					returns.concat( generate( node, generativePart.generativeParts, position, rotation, scope ) )
 				elsif generativePart.is_a?(SubNodeGenerator)
-					returns.concat( generativePart.apply( node, node.shape ) )
+					returns.concat( generativePart.apply( node, node.shape, position, rotation, scope ) )
 				elsif generativePart.is_a?(BindTexture)
 					generativePart.apply( node.shape )
 				end
@@ -93,7 +93,7 @@ module Rules
 	end
 
 	class ::Rules::SubNodeGenerator < GenerativePart
-		def apply( node, shape )
+		def apply( node, shape, position=V3._0, rotation=V3._0, scope=nil )
 			[]
 		end
 	end
@@ -109,9 +109,10 @@ module Rules
 			self.condition = condition
 		end
 
-		def apply( node, shape )
+		def apply( node, shape, position=V3._0, rotation=V3._0, scope=nil )
 			return [] if condition && !condition.call( node )
-			components = shape.component( splitType )
+			effective_shape = scope.nil? || scope.equal?(shape.scope) ? shape : (s = shape.clone; s.scope = scope; s)
+			components = effective_shape.component( splitType )
 			return [] if components.nil?
 			subNode = []
 			ids_local = ids.dup
@@ -120,7 +121,7 @@ module Rules
 				if ids_local.length >= 1
 					id = ids_local.shift
 				end
-				subNode << Node.new( node, id, subShapeArray[2], subShapeArray[0], subShapeArray[1] )
+				subNode << Node.new( node, id, subShapeArray[2], position + subShapeArray[0], rotation + subShapeArray[1] )
 			}
 			subNode
 		end
@@ -262,7 +263,7 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 			self.splitComponant = splitComponant
 		end
 
-		def apply( node, shape )
+		def apply( node, shape, position=V3._0, rotation=V3._0, scope=nil )
 			splitComponant.apply( axis, node, shape )
 		end
 	end

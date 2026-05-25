@@ -78,10 +78,6 @@ rules:
   - name: UpperLevels3
     actions:
       - scope: { dy: neg_rand_half_y }
-      - i: MainLevels
-
-  - name: MainLevels
-    actions:
       - component: { faces: side, rules: [MainLevelsFaces] }
       - component: { faces: top,  rules: [Roof] }
 

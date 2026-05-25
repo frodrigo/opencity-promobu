@@ -92,11 +92,7 @@ rules:
     actions:
       - scope:       { dx: 0.4, dz: 0.4 }
       - translation: { x: -0.2, y: 0, z: -0.2 }
-      - i: groundLevelFrise1
-
-  - name: groundLevelFrise1
-    actions:
-      - component: { faces: all, rules: [groundLevelFriseFace] }
+      - component:   { faces: all, rules: [groundLevelFriseFace] }
 
   # ── Main Levels ─────────────────────────────────────────────────────────────
 
@@ -303,31 +299,19 @@ rules:
     actions:
       - scope:       { dx: 0.4, dz: 0.4 }
       - translation: { x: -0.2, y: 0, z: -0.2 }
-      - i: frise0frise1
-
-  - name: frise0frise1
-    actions:
-      - component: { faces: all, rules: [frise0friseFace] }
+      - component:   { faces: all, rules: [frise0friseFace] }
 
   - name: topFrise0frise00
     actions:
       - scope:       { dx: 0.4, dz: 0.4 }
       - translation: { x: -0.2, y: 0, z: -0.2 }
-      - i: topFrise0frise01
-
-  - name: topFrise0frise01
-    actions:
-      - component: { faces: all, rules: [topFrise0frise01Face] }
+      - component:   { faces: all, rules: [topFrise0frise01Face] }
 
   - name: roof0
     actions:
       - scope:       { dx: 0.8, dz: 0.8 }
       - translation: { x: -0.4, y: 0, z: -0.4 }
-      - i: roof1
-
-  - name: roof1
-    actions:
-      - component: { faces: all, rules: [roof0Face] }
+      - component:   { faces: all, rules: [roof0Face] }
 
   # Duplicate in original source — preserved as-is
   - name: balcon0
