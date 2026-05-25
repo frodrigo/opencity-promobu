@@ -54,14 +54,16 @@ rules:
       - split:
           axis: x
           elements:
-            - { abs: 0.3, rule: groundLevel0Door2DoorColumn }
+            - { abs: 0.4, rule: groundLevel0Door2DoorColumn }
             - rel: 1
               repeat:
                 size: 2
                 elements:
                   - { abs: 1.8, rule: groundLevel0Door2Door       }
-                  - { rel: 1,   rule: groundLevel0Door2DoorColumn }
-            - { abs: 0.3, rule: groundLevel0Door2DoorColumn }
+                  - condition: not_last
+                    rel: 1
+                    rule: groundLevel0Door2DoorColumn
+            - { abs: 0.4, rule: groundLevel0Door2DoorColumn }
 
   # Ground Level BigDoor — extend depth, push back, instantiate
   - name: groundLevel0BigDoor
@@ -247,14 +249,16 @@ rules:
       - split:
           axis: x
           elements:
-            - { abs: 0.3, rule: frise0windwosBlason }
+            - { abs: 0.4, rule: frise0windwosBlason }
             - rel: 1
               repeat:
                 size: 2
                 elements:
                   - { abs: 1.8, rule: frise0windwosWindows2 }
-                  - { rel: 1,   rule: frise0windwosBlason   }
-            - { abs: 0.3, rule: frise0windwosBlason }
+                  - condition: not_last
+                    rel: 1
+                    rule: frise0windwosBlason
+            - { abs: 0.4, rule: frise0windwosBlason }
 
   # ── Top Frise ────────────────────────────────────────────────────────────────
 

@@ -128,6 +128,8 @@ module ProcedureBuildingGenerator
 		attr_accessor :position
 		attr_accessor :rotation
 		attr_accessor :subNodes
+		attr_accessor :repeat_index   # index of this tile within a SplitRepeat (nil if not in a repeat)
+		attr_accessor :repeat_count   # total tile count of the enclosing SplitRepeat (nil if not in a repeat)
 
 		def initialize( parent, ruleId, shape, position, rotation )
 			self.parent = parent

@@ -53,6 +53,14 @@ module RulesLoader
     case c
     when 'front_face'
       proc { |node| node.queryAbsRotation?( V3._0 ) }
+    when 'first'
+      proc { |node| node.repeat_index == 0 }
+    when 'last'
+      proc { |node| !node.repeat_count.nil? && node.repeat_index == node.repeat_count - 1 }
+    when 'not_first'
+      proc { |node| !node.repeat_index.nil? && node.repeat_index > 0 }
+    when 'not_last'
+      proc { |node| !node.repeat_count.nil? && node.repeat_index < node.repeat_count - 1 }
     when Hash
       if c[:scope_min]
         s = c[:scope_min]
@@ -210,7 +218,8 @@ module RulesLoader
         size = e[:abs] ? AbsoluteSize.new( e[:abs].to_f ) : RelativeSize.new( e[:rel].to_f )
         # The rule slot may be either a plain rule name or an inline SplitRepeat
         sub  = e[:repeat] ? build_split_repeat( e[:repeat], textures ) : e[:rule].to_s
-        [ size, sub ]
+        cond = e[:condition] ? build_condition( e[:condition].to_s ) : nil
+        [ size, sub, cond ]
       end
     }
     SplitElement.new( parts )

@@ -135,8 +135,10 @@ module Rules
 
 		def apply( axis, node, shape )
 			subNode = []
-			partSizes = parts.map { |x| x.is_a?(Array) ? x[0] : x }
-			partIds   = parts.map { |x| x.is_a?(Array) ? x[1] : x }
+			# Filter out parts whose condition fails for the current node
+			active_parts = parts.select { |p| !p.is_a?(Array) || p[2].nil? || p[2].call(node) }
+			partSizes = active_parts.map { |x| x.is_a?(Array) ? x[0] : x }
+			partIds   = active_parts.map { |x| x.is_a?(Array) ? x[1] : x }
 			shape.split( node, axis, partSizes, snapGroup ).each{ |subShapeArray|
 				id = partIds.shift
 				if subShapeArray[2].is_a?(SnapPlaneRectangle)
@@ -171,8 +173,51 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 		end
 
 		def apply( axis, node, shape )
-			subNode = []
-			shape.tile( node, axis, tileSize, snapPlane, snapGroup ).each{ |subShapeArray|
+			subNode   = []
+			saved_ri  = node.repeat_index
+			saved_rc  = node.repeat_count
+			length    = Float( axis.component( shape.scope ) )
+			nbTiles   = ( length / Float(tileSize) ).floor
+			return subNode if nbTiles <= 0
+
+			# --- Variable-size tiling when splitComponant is a SplitElement -------
+			# For each tile, determine which parts survive their conditions, then
+			# compute the effective tile size:
+			#   • tiles with surviving rel parts  → share the remaining length equally
+			#   • tiles with abs parts only       → shrink to sum of abs sizes
+			# This recomputation happens here (repeat level), not inside SplitElement.
+			tile_sizes = if splitComponant.is_a?(SplitElement)
+				tile_info = (0...nbTiles).map { |i|
+					node.repeat_index = i
+					node.repeat_count = nbTiles
+					active  = splitComponant.parts.select { |p|
+						!p.is_a?(Array) || p[2].nil? || p[2].call(node)
+					}
+					has_rel = active.any? { |p| p.is_a?(Array) && p[0].is_a?(RelativeSize) }
+					abs_sum = active.sum  { |p|
+						(p.is_a?(Array) && p[0].is_a?(AbsoluteSize)) ? p[0].value : 0.0
+					}
+					{ has_rel: has_rel, abs_sum: abs_sum }
+				}
+				abs_only_total  = tile_info.reject { |t|  t[:has_rel] }.sum { |t| t[:abs_sum] }
+				rel_tile_count  = tile_info.count  { |t|  t[:has_rel] }
+				rel_tile_size   = rel_tile_count > 0 ?
+					( length - abs_only_total ) / rel_tile_count.to_f :
+					0.0
+				tile_info.map { |t| t[:has_rel] ? rel_tile_size : t[:abs_sum] }
+			else
+				# No conditional parts — keep uniform tiling (exact fill)
+				adj = length / nbTiles
+				Array.new( nbTiles, adj )
+			end
+
+			# Split the shape into variable-sized tile sub-shapes
+			part_sizes = tile_sizes.map { |s| AbsoluteSize.new(s) }
+			tile_shapes = shape.split( node, axis, part_sizes, snapGroup )
+			tile_count  = tile_shapes.count { |s| !s[2].is_a?(SnapPlaneRectangle) }
+			tile_idx    = 0
+
+			tile_shapes.each { |subShapeArray|
 				if subShapeArray[2].is_a?(SnapPlaneRectangle)
 					absPosition, absRotation = node.toAbs( subShapeArray[0], subShapeArray[1] )
 					SnapRegistery.instance << SnapPlane.new( subShapeArray[2].snap, absPosition, absRotation )
@@ -180,13 +225,25 @@ root = node
 root = root.parent until root.parent.nil?
 root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, absRotation )
 				elsif splitComponant.is_a?(SplitComponant)
-					subNode.concat( splitComponant.apply( axis, node, subShapeArray[2] ).collect{ |nodeComponent|
+					node.repeat_index = tile_idx
+					node.repeat_count = tile_count
+					new_nodes = splitComponant.apply( axis, node, subShapeArray[2] ).collect { |nodeComponent|
 						Node.new( node, nodeComponent.ruleId, nodeComponent.shape, nodeComponent.position+subShapeArray[0], nodeComponent.rotation+subShapeArray[1] )
-					} )
+					}
+					new_nodes.each { |n| n.repeat_index = tile_idx; n.repeat_count = tile_count }
+					subNode.concat( new_nodes )
+					tile_idx += 1
 				else
-					subNode << Node.new( node, splitComponant, subShapeArray[2], subShapeArray[0], subShapeArray[1] )
+					n = Node.new( node, splitComponant, subShapeArray[2], subShapeArray[0], subShapeArray[1] )
+					n.repeat_index = tile_idx
+					n.repeat_count = tile_count
+					subNode << n
+					tile_idx += 1
 				end
 			}
+
+			node.repeat_index = saved_ri
+			node.repeat_count = saved_rc
 			subNode
 		end
 	end
