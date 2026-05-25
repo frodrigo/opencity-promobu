@@ -39,14 +39,33 @@ rules:
       - split:
           axis: x
           elements:
-            - { abs: 2.5, rule: groundLevel0BigDoor }
+            - { abs: 2.5, rule: groundLevel0Door2 }
+            - { rel: 1, rule: groundLevel0faceInner }
+            - { abs: 2.5, rule: groundLevel0Door2 }
+
+  - name: groundLevel0faceInner
+    actions:
+      - scope:       { z: -0.4 }
+      - translation: { x: 0, y: 0, z: 0.4 }
+      - instantiate: [Box, groundLevel0faceInner0]
+
+  - name: groundLevel0faceInner0
+    actions:
+      - component: { faces: front, rules: [groundLevel0faceInner0Front] }
+      - component: { faces: right, rules: [groundLevel0Door2DoorColumn2] }
+      - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2] }
+
+  - name: groundLevel0faceInner0Front
+    actions:
+      - split:
+          axis: x
+          elements:
             - rel: 1
               repeat:
                 size: 2
                 elements:
                   - { abs: 1.8, rule: groundLevel0Door2Door, condition: not_first }
                   - { rel: 1,   rule: groundLevel0Door2DoorColumn }
-            - { abs: 2.5, rule: groundLevel0BigDoor      }
 
   - name: groundLevel0face
     actions:
@@ -59,19 +78,6 @@ rules:
                 elements:
                   - { abs: 1.8, rule: groundLevel0Door2Door, condition: not_first }
                   - { rel: 1, rule: groundLevel0Door2DoorColumn }
-
-  # Ground Level BigDoor — extend depth, push back, instantiate
-  - name: groundLevel0BigDoor
-    actions:
-      - scope:       { z: 0.4 }
-      - translation: { x: 0, y: 0, z: -0.4 }
-      - instantiate: [Box, BigDoor0]
-
-  - name: BigDoor0
-    actions:
-      - component: { faces: front, rules: [groundLevel0Door2]            }
-      - component: { faces: right, rules: [groundLevel0Door2DoorColumn2] }
-      - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2] }
 
   # Ground Level Door
   - name: groundLevel0Door2
@@ -124,14 +130,33 @@ rules:
       - split:
           axis: x
           elements:
-            - { abs: 2.5, rule: MainLevel0Border }
+            - { abs: 2.5, rule: MainLevel0Border    }
+            - { rel: 1,   rule: MainLevel0FaceInner }
+            - { abs: 2.5, rule: MainLevel0Border    }
+
+  - name: MainLevel0FaceInner
+    actions:
+      - scope:       { z: -0.4 }
+      - translation: { x: 0, y: 0, z: 0.4 }
+      - instantiate: [Box, MainLevel0FaceInner0]
+
+  - name: MainLevel0FaceInner0
+    actions:
+      - component: { faces: front, rules: [MainLevel0FaceInner0Front]      }
+      - component: { faces: right, rules: [groundLevel0Door2DoorColumn2]   }
+      - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2]   }
+
+  - name: MainLevel0FaceInner0Front
+    actions:
+      - split:
+          axis: x
+          elements:
             - rel: 1
               repeat:
                 size: 2
                 elements:
-                  - { abs: 1.8, rule: MainLevel0CenterWindows2 }
-                  - { rel: 1,   rule: MainLevel0CenterColumn, condition: not_last}
-            - { abs: 2.5, rule: MainLevel0Border         }
+                  - { abs: 1.8, rule: MainLevel0CenterWindows2               }
+                  - { rel: 1,   rule: MainLevel0CenterColumn, condition: not_last }
 
   - name: MainLevel0Border
     actions:
@@ -166,14 +191,33 @@ rules:
       - split:
           axis: x
           elements:
-            - { abs: 2.5, rule: LastMainLevel0Border }
+            - { abs: 2.5, rule: LastMainLevel0Border    }
+            - { rel: 1,   rule: LastMainLevel0FaceInner }
+            - { abs: 2.5, rule: LastMainLevel0Border    }
+
+  - name: LastMainLevel0FaceInner
+    actions:
+      - scope:       { z: -0.4 }
+      - translation: { x: 0, y: 0, z: 0.4 }
+      - instantiate: [Box, LastMainLevel0FaceInner0]
+
+  - name: LastMainLevel0FaceInner0
+    actions:
+      - component: { faces: front, rules: [LastMainLevel0FaceInner0Front]  }
+      - component: { faces: right, rules: [groundLevel0Door2DoorColumn2]   }
+      - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2]   }
+
+  - name: LastMainLevel0FaceInner0Front
+    actions:
+      - split:
+          axis: x
+          elements:
             - rel: 1
               repeat:
                 size: 2
                 elements:
-                  - { abs: 1.8, rule: LastMainLevel0CenterWindows2 }
-                  - { rel: 1,   rule: LastMainLevel0CenterColumn, condition: not_last}
-            - { abs: 2.5, rule: LastMainLevel0Border         }
+                  - { abs: 1.8, rule: LastMainLevel0CenterWindows2               }
+                  - { rel: 1,   rule: LastMainLevel0CenterColumn, condition: not_last }
 
   - name: LastMainLevel0Border
     actions:
@@ -216,15 +260,33 @@ rules:
       - split:
           axis: x
           elements:
-            - { abs: 2.5, rule: frise0windwosBorder }
+            - { abs: 2.5, rule: frise0windwosBorder  }
+            - { rel: 1,   rule: frise0windowsInner   }
+            - { abs: 2.5, rule: frise0windwosBorder  }
+
+  - name: frise0windowsInner
+    actions:
+      - scope:       { z: -0.4 }
+      - translation: { x: 0, y: 0, z: 0.4 }
+      - instantiate: [Box, frise0windowsInner0]
+
+  - name: frise0windowsInner0
+    actions:
+      - component: { faces: front, rules: [frise0windowsInner0Front]     }
+      - component: { faces: right, rules: [groundLevel0Door2DoorColumn2] }
+      - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2] }
+
+  - name: frise0windowsInner0Front
+    actions:
+      - split:
+          axis: x
+          elements:
             - rel: 1
               repeat:
                 size: 2
                 elements:
-                  - { abs: 1.8, rule: frise0windwosWindows2 }
-                  - { rel: 1,   rule: frise0windwosBlason   }
-            - { abs: 1.8, rule: frise0windwosWindows2 }
-            - { abs: 2.5, rule: frise0windwosBorder   }
+                  - { abs: 1.8, rule: frise0windwosWindows2, condition: not_first }
+                  - { rel: 1,   rule: frise0windwosBlason }
 
   - name: frise0windwosBorder
     actions:
