@@ -13,3 +13,10 @@ http://www.opencity.info/wiki/index.php/BuildingProceduralGeneration
 
 Last modified:
 	$Id$
+
+Run
+```sh
+ruby rules.rb rules/canary.yml 5 3 4
+ruby rules.rb rules/ttd.yml 10 30 10
+ruby rules.rb rules/nyc1920.yml 20 14 8
+```

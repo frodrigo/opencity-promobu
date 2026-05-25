@@ -20,8 +20,8 @@ require_relative 'promobu/exportGLTF'
 require_relative 'promobu/optimize'
 require_relative 'promobu/rules_loader'
 
-# root = Node.new( nil, "root", Box.new(V3[5,3,4]), V3._0, V3._0 )
-# RulesLoader.load( "rules/canary.yml" ).apply( [root] )
+yaml_path = ARGV[0]
+w, h, d = ARGV[1..3].map(&:to_f)
 
 	rulesSet << Rule.new( "root", nil, [Component.new(SideFaces,["d"])] )
 	rulesSet << Rule.new( "d", nil, [Split.new(XAxis,SplitElement.new([[AbsoluteSize.new(0.25),"e"],[RelativeSize.new(1),"f"]]))] )
