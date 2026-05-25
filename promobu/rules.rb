@@ -193,18 +193,18 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 					active  = splitComponant.parts.select { |p|
 						!p.is_a?(Array) || p[2].nil? || p[2].call(node)
 					}
-					has_rel = active.any? { |p| p.is_a?(Array) && p[0].is_a?(RelativeSize) }
-					abs_sum = active.sum  { |p|
+					abs_sum = active.sum { |p|
 						(p.is_a?(Array) && p[0].is_a?(AbsoluteSize)) ? p[0].value : 0.0
 					}
-					{ has_rel: has_rel, abs_sum: abs_sum }
+					rel_sum = active.sum { |p|
+						(p.is_a?(Array) && p[0].is_a?(RelativeSize)) ? p[0].value : 0.0
+					}
+					{ abs_sum: abs_sum, rel_sum: rel_sum }
 				}
-				abs_only_total  = tile_info.reject { |t|  t[:has_rel] }.sum { |t| t[:abs_sum] }
-				rel_tile_count  = tile_info.count  { |t|  t[:has_rel] }
-				rel_tile_size   = rel_tile_count > 0 ?
-					( length - abs_only_total ) / rel_tile_count.to_f :
-					0.0
-				tile_info.map { |t| t[:has_rel] ? rel_tile_size : t[:abs_sum] }
+				total_abs = tile_info.sum { |t| t[:abs_sum] }
+				total_rel = tile_info.sum { |t| t[:rel_sum] }
+				r = total_rel > 0 ? ( length - total_abs ) / total_rel : 0.0
+				tile_info.map { |t| t[:abs_sum] + t[:rel_sum] * r }
 			else
 				# No conditional parts — keep uniform tiling (exact fill)
 				adj = length / nbTiles
