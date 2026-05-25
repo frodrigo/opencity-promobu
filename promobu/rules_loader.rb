@@ -127,9 +127,17 @@ module RulesLoader
     value = hash[key]
 
     case key
-    when :split
-      check_keys!( value, %i[axis elements repeat], "split action" )
-      [ build_split( value, textures ) ]
+    when :split_x, :split_y, :split_z
+      axis = AXIS_MAP.fetch( key.to_s[-1] ) { raise "Unknown axis in action key: #{key}" }
+      check_keys!( value, %i[elements repeat], "#{key} action" )
+      componant = if value[:elements]
+                    build_split_element( value[:elements], textures )
+                  elsif value[:repeat]
+                    build_split_repeat( value[:repeat], textures )
+                  else
+                    raise "#{key} must have :elements or :repeat"
+                  end
+      [ Split.new( axis, componant ) ]
 
     when :component
       check_keys!( value, %i[faces rules condition], "component action" )
@@ -220,21 +228,6 @@ module RulesLoader
     end
   end
   private_class_method :resolve_scope_delta
-
-  def self.build_split( s, textures )
-    axis = AXIS_MAP.fetch( s[:axis].to_s ) {
-      raise "Unknown axis: #{s[:axis].inspect}"
-    }
-    componant = if s[:elements]
-                  build_split_element( s[:elements], textures )
-                elsif s[:repeat]
-                  build_split_repeat( s[:repeat], textures )
-                else
-                  raise "split must have :elements or :repeat"
-                end
-    Split.new( axis, componant )
-  end
-  private_class_method :build_split
 
   def self.build_split_element( elements, textures )
     parts = elements.map { |e|

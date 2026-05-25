@@ -13,8 +13,7 @@ rules:
 
   - name: root
     actions:
-      - split:
-          axis: y
+      - split_y:
           elements:
             - { abs: 1.2, rule: groundLevel0 }
             - { abs: 1,   rule: groundLevelOrnement }
@@ -29,8 +28,7 @@ rules:
     actions:
       - component: { faces: right, rules: [ColumnLine0] }
       - component: { faces: left,  rules: [ColumnLine0] }
-      - split:
-          axis: x
+      - split_x:
           elements:
             - { abs: 1, rule: delete }
             - { rel: 1, rule: groundLevel1 }
@@ -38,8 +36,7 @@ rules:
 
   - name: groundLevel1
     actions:
-      - split:
-          axis: z
+      - split_z:
           elements:
             - { rel: 1, rule: groundLevel2 }
             - { abs: 1, rule: delete }
@@ -51,8 +48,7 @@ rules:
   # Repeat a (Column0 + gap) tile, capped by a final Column0
   - name: ColumnLine0
     actions:
-      - split:
-          axis: x
+      - split_x:
           elements:
             - rel: 1
               repeat:
@@ -74,16 +70,14 @@ rules:
 
   - name: UpperLevels0
     actions:
-      - split:
-          axis: x
+      - split_x:
           elements:
             - { rel: 1, rule: UpperLevels2 }
             - { rel: 1, rule: UpperLevels2 }
 
   - name: UpperLevels2
     actions:
-      - split:
-          axis: z
+      - split_z:
           elements:
             - { rel: 1, rule: UpperLevels3 }
             - { rel: 1, rule: UpperLevels3 }
@@ -101,22 +95,19 @@ rules:
 
   - name: MainLevelsFaces
     actions:
-      - split:
-          axis: y
+      - split_y:
           elements:
             - { rel: 1,   rule: MainLevelsWindows }
             - { abs: 0.5, rule: Ornement }
 
   - name: MainLevelsWindows
     actions:
-      - split:
-          axis: y
+      - split_y:
           repeat: { size: 1, rule: Level }
 
   - name: Level
     actions:
-      - split:
-          axis: x
+      - split_x:
           elements:
             - { abs: 1, rule: LevelCorner }
             - rel: 1

@@ -28,16 +28,14 @@ rules:
 
   - name: d
     actions:
-      - split:
-          axis: x
+      - split_x:
           elements:
             - { abs: 0.25, rule: e }
             - { rel: 1,    rule: f }
 
   - name: f
     actions:
-      - split:
-          axis: x
+      - split_x:
           repeat: { size: 0.25, rule: g }
 
   - name: g
