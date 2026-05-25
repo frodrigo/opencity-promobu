@@ -152,11 +152,19 @@ module RulesLoader
       [ Roof.new( roof_type, value[:rule].to_s ) ]
 
     when :instantiate
-      shape_name, rule_name = value
+      shape_name, rule_ref = value
       shape_cls = SHAPE_MAP.fetch( shape_name.to_s ) {
         raise "Unknown shape: #{shape_name.inspect}"
       }.call
-      [ Instantiate.new( shape_cls, rule_name ) ]
+      rule_id = if rule_ref.is_a?(Hash)
+        check_keys!( rule_ref, %i[condition actions], "anonymous instantiate rule" )
+        cond    = build_condition( rule_ref[:condition] )
+        actions = ( rule_ref[:actions] || [] ).flat_map { |a| build_action( a, textures ) }
+        Rule.new( nil, cond, actions )
+      else
+        rule_ref
+      end
+      [ Instantiate.new( shape_cls, rule_id ) ]
 
     when :scope
       check_keys!( value, %i[x y z dx dy dz], "scope action" )

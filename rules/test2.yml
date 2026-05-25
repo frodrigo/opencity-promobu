@@ -20,11 +20,10 @@ rules:
   - name: b
     actions:
       - scope: { dx: 1, dy: 1, dz: 1 }
-      - instantiate: [Box, c]
-
-  - name: c
-    actions:
-      - component: { faces: side, rules: [d] }
+      - instantiate:
+          - Box
+          - actions:
+              - component: { faces: side, rules: [d] }
 
   - name: d
     actions:

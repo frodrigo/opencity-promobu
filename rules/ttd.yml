@@ -57,11 +57,10 @@ rules:
   - name: Column0
     actions:
       - scope: { x: 0.4, z: 0.3 }
-      - instantiate: [Box, Column1]
-
-  - name: Column1
-    actions:
-      - component: { faces: side, rules: [Column2] }
+      - instantiate:
+          - Box
+          - actions:
+              - component: { faces: side, rules: [Column2] }
 
   - name: UpperLevels0
     actions:

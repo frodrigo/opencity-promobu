@@ -43,13 +43,12 @@ rules:
     actions:
       - scope:       { z: -0.4 }
       - translation: { x: 0, y: 0, z: 0.4 }
-      - instantiate: [Box, groundLevel0faceInner0]
-
-  - name: groundLevel0faceInner0
-    actions:
-      - component: { faces: front, rules: [groundLevel0faceInner0Front] }
-      - component: { faces: right, rules: [groundLevel0Door2DoorColumn2] }
-      - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2] }
+      - instantiate:
+        - Box
+        - actions:
+            - component: { faces: front, rules: [groundLevel0faceInner0Front] }
+            - component: { faces: right, rules: [groundLevel0Door2DoorColumn2] }
+            - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2] }
 
   - name: groundLevel0faceInner0Front
     actions:
@@ -82,13 +81,12 @@ rules:
     actions:
       - scope:       { z: 0.2 }
       - translation: { x: 0, y: 0, z: -0.2 }
-      - instantiate: [Box, groundLevel0Door2DoorColumn1]
-
-  - name: groundLevel0Door2DoorColumn1
-    actions:
-      - component: { faces: front, rules: [groundLevel0Door2DoorColumn2] }
-      - component: { faces: right, rules: [groundLevel0Door2DoorColumn2] }
-      - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2] }
+      - instantiate:
+          - Box
+          - actions:
+              - component: { faces: front, rules: [groundLevel0Door2DoorColumn2] }
+              - component: { faces: right, rules: [groundLevel0Door2DoorColumn2] }
+              - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2] }
 
   - name: groundLevelFrise0
     actions:
@@ -123,13 +121,12 @@ rules:
     actions:
       - scope:       { z: -0.4 }
       - translation: { x: 0, y: 0, z: 0.4 }
-      - instantiate: [Box, MainLevel0FaceInner0]
-
-  - name: MainLevel0FaceInner0
-    actions:
-      - component: { faces: front, rules: [MainLevel0FaceInner0Front] }
-      - component: { faces: right, rules: [groundLevel0Door2DoorColumn2] }
-      - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2] }
+      - instantiate:
+          - Box
+          - actions:
+              - component: { faces: front, rules: [MainLevel0FaceInner0Front] }
+              - component: { faces: right, rules: [groundLevel0Door2DoorColumn2] }
+              - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2] }
 
   - name: MainLevel0FaceInner0Front
     actions:
@@ -174,13 +171,12 @@ rules:
     actions:
       - scope:       { z: -0.4 }
       - translation: { x: 0, y: 0, z: 0.4 }
-      - instantiate: [Box, LastMainLevel0FaceInner0]
-
-  - name: LastMainLevel0FaceInner0
-    actions:
-      - component: { faces: front, rules: [LastMainLevel0FaceInner0Front] }
-      - component: { faces: right, rules: [groundLevel0Door2DoorColumn2] }
-      - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2] }
+      - instantiate:
+          - Box
+          - actions:
+              - component: { faces: front, rules: [LastMainLevel0FaceInner0Front] }
+              - component: { faces: right, rules: [groundLevel0Door2DoorColumn2] }
+              - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2] }
 
   - name: LastMainLevel0FaceInner0Front
     actions:
@@ -231,13 +227,12 @@ rules:
     actions:
       - scope:       { z: -0.4 }
       - translation: { x: 0, y: 0, z: 0.4 }
-      - instantiate: [Box, frise0windowsInner0]
-
-  - name: frise0windowsInner0
-    actions:
-      - component: { faces: front, rules: [frise0windowsInner0Front] }
-      - component: { faces: right, rules: [groundLevel0Door2DoorColumn2] }
-      - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2] }
+      - instantiate:
+          - Box
+          - actions:
+              - component: { faces: front, rules: [frise0windowsInner0Front] }
+              - component: { faces: right, rules: [groundLevel0Door2DoorColumn2] }
+              - component: { faces: left,  rules: [groundLevel0Door2DoorColumn2] }
 
   - name: frise0windowsInner0Front
     actions:

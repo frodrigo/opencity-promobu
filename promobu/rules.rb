@@ -342,13 +342,21 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 		def apply( nodes )
 			subNodes = []
 			nodes.each{ |node|
-				self.rules.each{ |rule|
-					if rule.id == node.ruleId && rule.apply?(node)
+				if node.ruleId.is_a?(Rule)
+					rule = node.ruleId
+					if rule.apply?(node)
 						node.subNodes.concat( rule.apply( node ) )
 						subNodes.concat( node.subNodes )
-						break
 					end
-				}
+				else
+					self.rules.each{ |rule|
+						if rule.id == node.ruleId && rule.apply?(node)
+							node.subNodes.concat( rule.apply( node ) )
+							subNodes.concat( node.subNodes )
+							break
+						end
+					}
+				end
 			}
 			unless subNodes.empty?
 				apply( subNodes )
