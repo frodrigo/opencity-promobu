@@ -91,14 +91,23 @@ module RulesLoader
   # Actions ------------------------------------------------------------------
 
   FACE_MAP = {
-    'all'    => AllFaces,
-    'top'    => TopFace,
-    'bottom' => BottomFace,
-    'side'   => SideFaces,
-    'right'  => RightFace,
-    'left'   => LeftFace,
-    'front'  => FrontFace,
-    'main'   => MainFaces,
+    'all'           => AllFaces,
+    'top'           => TopFace,
+    'bottom'        => BottomFace,
+    'side'          => SideFaces,
+    'right'         => RightFace,
+    'left'          => LeftFace,
+    'front'         => FrontFace,
+    'back'          => BackFace,
+    'main'          => MainFaces,
+    'reverse-front'  => ReverseFrontFace,
+    'reverse-back'   => ReverseBackFace,
+    'reverse-left'   => ReverseLeftFace,
+    'reverse-right'  => ReverseRightFace,
+    'reverse-top'    => ReverseTopFace,
+    'reverse-bottom' => ReverseBottomFace,
+    'reverse-side'   => ReverseSideFaces,
+    'reverse-all'    => ReverseAllFaces,
   }.freeze
 
   AXIS_MAP = {
@@ -123,11 +132,12 @@ module RulesLoader
       [ build_split( value, textures ) ]
 
     when :component
-      check_keys!( value, %i[faces rules], "component action" )
+      check_keys!( value, %i[faces rules condition], "component action" )
       face_cls = FACE_MAP.fetch( value[:faces].to_s ) {
         raise "Unknown face selector: #{value[:faces].inspect}"
       }
-      [ Component.new( face_cls, value[:rules].map(&:to_s) ) ]
+      cond = value[:condition] ? build_condition( value[:condition].to_s ) : nil
+      [ Component.new( face_cls, value[:rules].map(&:to_s), cond ) ]
 
     when :i
       [ I.new( value.to_s ) ]

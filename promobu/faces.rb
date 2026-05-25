@@ -9,7 +9,7 @@ module Faces
 
 	class ::Faces::AllFaces < Face
 	end
-	
+
 	class ::Faces::BottomFace < Face
 	end
 
@@ -33,6 +33,15 @@ module Faces
 
 	class ::Faces::MainFaces < Face
 	end
+
+	class ::Faces::ReverseFrontFace  < Face; end
+	class ::Faces::ReverseBackFace   < Face; end
+	class ::Faces::ReverseLeftFace   < Face; end
+	class ::Faces::ReverseRightFace  < Face; end
+	class ::Faces::ReverseTopFace    < Face; end
+	class ::Faces::ReverseBottomFace < Face; end
+	class ::Faces::ReverseSideFaces  < Face; end
+	class ::Faces::ReverseAllFaces   < Face; end
 
 	class ::Faces::Roof_
 	end

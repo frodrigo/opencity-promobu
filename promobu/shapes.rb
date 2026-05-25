@@ -159,6 +159,14 @@ module Shapes
 
 		def componentRight; [ V3[scope.x,0,0], V3[0,-90,0], Rectangle.new(V2[scope.z,scope.y]) ]; end
 
+		# Reverse (inward-facing) variants — same plane, flipped normal
+		def componentReverseFront;  [ V3[scope.x,0,0],         V3[0,180,0], Rectangle.new(V2[scope.x,scope.y]) ]; end
+		def componentReverseBack;   [ V3[0,0,scope.z],         V3._0,       Rectangle.new(V2[scope.x,scope.y]) ]; end
+		def componentReverseLeft;   [ V3[0,0,0],               V3[0,-90,0], Rectangle.new(V2[scope.z,scope.y]) ]; end
+		def componentReverseRight;  [ V3[scope.x,0,scope.z],   V3[0,90,0],  Rectangle.new(V2[scope.z,scope.y]) ]; end
+		def componentReverseTop;    [ V3[0,scope.y,scope.z],   V3[-90,0,0], Rectangle.new(V2[scope.x,scope.z]) ]; end
+		def componentReverseBottom; [ V3[0,0,0],               V3[90,0,0],  Rectangle.new(V2[scope.x,scope.z]) ]; end
+
 		def component( splitType )
 			if splitType == SideFaces
 				[ componentFront, componentBack, componentLeft, componentRight ]
@@ -174,6 +182,22 @@ module Shapes
 				[ componentFront ]
 			elsif splitType == BackFace
 				[ componentBack ]
+			elsif splitType == ReverseFrontFace
+				[ componentReverseFront ]
+			elsif splitType == ReverseBackFace
+				[ componentReverseBack ]
+			elsif splitType == ReverseLeftFace
+				[ componentReverseLeft ]
+			elsif splitType == ReverseRightFace
+				[ componentReverseRight ]
+			elsif splitType == ReverseTopFace
+				[ componentReverseTop ]
+			elsif splitType == ReverseBottomFace
+				[ componentReverseBottom ]
+			elsif splitType == ReverseSideFaces
+				[ componentReverseFront, componentReverseBack, componentReverseLeft, componentReverseRight ]
+			elsif splitType == ReverseAllFaces
+				[ componentReverseBottom, componentReverseTop, componentReverseFront, componentReverseBack, componentReverseLeft, componentReverseRight ]
 			else
 				[ componentBottom, componentTop, componentFront, componentBack, componentLeft, componentRight ]
 			end
