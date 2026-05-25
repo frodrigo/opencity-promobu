@@ -247,7 +247,7 @@ module Shapes
 	class ::Shapes::TriangularPrism < Shape3D
 		def componentFront; [ V3._0, V3[Math.atan2(scope.z/2.0,Float(scope.y))*180/Math::PI,0,0], Rectangle.new(V2[scope.x,Math.sqrt(scope.y*scope.y+(scope.z/2.0)*(scope.z/2.0))]) ]; end
 
-		def componentBack; [ V3[scope.x,0,scope.z], V3[Math.atan2(scope.z/2.0,Float(scope.y))*180/Math::PI,180,0], Rectangle.new(V2[scope.x,Math.sqrt(scope.y*scope.y+(scope.z/2.0)*(scope.z/2.0))]) ]; end
+		def componentBack; [ V3[scope.x,0,scope.z], V3[-Math.atan2(scope.z/2.0,Float(scope.y))*180/Math::PI,180,0], Rectangle.new(V2[scope.x,Math.sqrt(scope.y*scope.y+(scope.z/2.0)*(scope.z/2.0))]) ]; end
 
 		def componentLeft; [ V3[0,0,scope.z], V3[0,90,0], IsoscelesTriangle.new(V2[scope.z,scope.y]) ]; end
 
