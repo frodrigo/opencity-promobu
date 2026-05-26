@@ -33,20 +33,26 @@ module RulesLoader
   def self.build_textures( map )
     map.transform_values { |t|
       check_keys!( t, %i[type file sx sy double_side], "texture" )
-      case t[:type]
-      when 'tiled'
-        tex = TiledTexture.new( t[:file], t[:sx], t[:sy] )
-        tex.double_side = true if t[:double_side]
-        tex
-      when 'adapted'
-        tex = AdaptedTexture.new( t[:file] )
-        tex.double_side = true if t[:double_side]
-        tex
-      else raise "Unknown texture type: #{t[:type].inspect} in rules YAML"
-      end
+      build_texture_object( t )
     }
   end
   private_class_method :build_textures
+
+  def self.build_texture_object( t )
+    case t[:type].to_s
+    when 'tiled'
+      tex = TiledTexture.new( t[:file].to_s, t[:sx].to_f, t[:sy].to_f )
+      tex.double_side = true if t[:double_side]
+      tex
+    when 'adapted'
+      tex = AdaptedTexture.new( t[:file].to_s )
+      tex.double_side = true if t[:double_side]
+      tex
+    else
+      raise "Unknown texture type: #{t[:type].inspect}"
+    end
+  end
+  private_class_method :build_texture_object
 
   def self.build_rule( r, textures )
     check_keys!( r, %i[name condition actions], "rule '#{r[:name]}'" )
@@ -266,17 +272,7 @@ module RulesLoader
       }
     when Hash
       check_keys!( value, %i[type file sx sy double_side], "texture action" )
-      case value[:type].to_s
-      when 'tiled'
-        t = TiledTexture.new( value[:file].to_s, value[:sx].to_f, value[:sy].to_f )
-        t.double_side = true if value[:double_side]
-        t
-      when 'adapted'
-        t = AdaptedTexture.new( value[:file].to_s )
-        t.double_side = true if value[:double_side]
-        t
-      else raise "Unknown texture type in action: #{value[:type].inspect}"
-      end
+      build_texture_object( value )
     else
       raise "Invalid texture value: #{value.inspect}"
     end

@@ -1,11 +1,8 @@
 
 module Rules
 
-	class ::Rules::Rule
-		attr_accessor :id
-		attr_accessor :condition
-		attr_accessor :generativeParts
-		attr_accessor :probability
+	class Rule
+		attr_accessor :id, :condition, :generativeParts, :probability
 
 		def initialize( id, condition, generativeParts, probability=1 )
 			self.id = id
@@ -15,42 +12,41 @@ module Rules
 		end
 
 		def apply?( node )
-			if condition.nil?
-				true
-			else
-				condition.call( node )
-			end
+			condition.nil? || condition.call( node )
 		end
 
 		def apply( node )
 			generate( node, self.generativeParts, V3._0, V3._0, node.shape.scope )
 		end
 
+		private
+
 		def generate( node, generativeParts, position, rotation, scope )
-			returns = []
-			generativeParts.each { |generativePart|
-				if generativePart.is_a?(ContextEdit)
-					(position, rotation, scope) = generativePart.apply( position, rotation, scope )
-				elsif generativePart.is_a?(Creational)
-					returns << generativePart.apply( node, position, rotation, scope )
-				elsif generativePart.is_a?(SubContext)
-					returns.concat( generate( node, generativePart.generativeParts, position, rotation, scope ) )
-				elsif generativePart.is_a?(SubNodeGenerator)
-					returns.concat( generativePart.apply( node, node.shape, position, rotation, scope ) )
-				elsif generativePart.is_a?(BindTexture)
-					generativePart.apply( node.shape )
+			result = []
+			generativeParts.each { |gp|
+				case gp
+				when ContextEdit
+					position, rotation, scope = gp.apply( position, rotation, scope )
+				when Creational
+					result << gp.apply( node, position, rotation, scope )
+				when SubContext
+					result.concat( generate( node, gp.generativeParts, position, rotation, scope ) )
+				when SubNodeGenerator
+					result.concat( gp.apply( node, node.shape, position, rotation, scope ) )
+				when BindTexture
+					gp.apply( node.shape )
 				end
 			}
-			returns
+			result
 		end
 	end
 
-	class ::Rules::GenerativePart
+	class GenerativePart
 		def apply
 		end
 	end
 
-	class ::Rules::SubContext < GenerativePart
+	class SubContext < GenerativePart
 		attr_accessor :generativeParts
 
 		def initialize( generativeParts )
@@ -58,7 +54,7 @@ module Rules
 		end
 	end
 
-	class ::Rules::ContextEdit < GenerativePart
+	class ContextEdit < GenerativePart
 		attr_accessor :v3
 
 		def initialize( v3 )
@@ -70,19 +66,19 @@ module Rules
 		end
 	end
 
-	class ::Rules::Translation < ContextEdit
+	class Translation < ContextEdit
 		def apply( position, rotation, scope )
 			[ position+v3, rotation, scope ]
 		end
 	end
 
-	class ::Rules::Rotation < ContextEdit
+	class Rotation < ContextEdit
 		def apply( position, rotation, scope )
 			[ position, rotation+v3, scope ]
 		end
 	end
 
-	class ::Rules::Scope < ContextEdit
+	class Scope < ContextEdit
 		def apply( position, rotation, scope )
 			if v3.is_a?(Proc)
 				[ position, rotation, v3.call(scope) ]
@@ -92,16 +88,14 @@ module Rules
 		end
 	end
 
-	class ::Rules::SubNodeGenerator < GenerativePart
+	class SubNodeGenerator < GenerativePart
 		def apply( node, shape, position=V3._0, rotation=V3._0, scope=nil )
 			[]
 		end
 	end
 
-	class ::Rules::Component < SubNodeGenerator
-		attr_accessor :splitType
-		attr_accessor :ids
-		attr_accessor :condition
+	class Component < SubNodeGenerator
+		attr_accessor :splitType, :ids, :condition
 
 		def initialize( splitType, ids, condition=nil )
 			self.splitType = splitType
@@ -130,9 +124,8 @@ module Rules
 	class ::Rules::SplitComponant
 	end
 
-	class ::Rules::SplitElement < SplitComponant
-		attr_accessor :parts
-		attr_accessor :snapGroup
+	class SplitElement < SplitComponant
+		attr_accessor :parts, :snapGroup
 
 		def initialize( parts, snapGroup=nil )
 			self.parts = parts
@@ -148,11 +141,7 @@ module Rules
 			shape.split( node, axis, partSizes, snapGroup ).each{ |subShapeArray|
 				id = partIds.shift
 				if subShapeArray[2].is_a?(SnapPlaneRectangle)
-					absPosition, absRotation = node.toAbs( subShapeArray[0], subShapeArray[1] )
-					SnapRegistery.instance << SnapPlane.new( subShapeArray[2].snap, absPosition, absRotation )
-root = node
-root = root.parent until root.parent.nil?
-root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, absRotation )
+					register_snap_plane( node, subShapeArray )
 				elsif id.is_a?(SplitComponant)
 					subNode.concat( id.apply( axis, node, subShapeArray[2] ).collect{ |nodeComponent|
 						Node.new( node, nodeComponent.ruleId, nodeComponent.shape, nodeComponent.position+subShapeArray[0], nodeComponent.rotation+subShapeArray[1] )
@@ -165,11 +154,8 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 		end
 	end
 
-	class ::Rules::SplitRepeat < SplitComponant
-		attr_accessor :tileSize
-		attr_accessor :splitComponant
-		attr_accessor :snapPlane
-		attr_accessor :snapGroup
+	class SplitRepeat < SplitComponant
+		attr_accessor :tileSize, :splitComponant, :snapPlane, :snapGroup
 
 		def initialize( tileSize, splitComponant, snapPlane=nil, snapGroup=nil )
 			self.tileSize = tileSize
@@ -225,11 +211,7 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 
 			tile_shapes.each { |subShapeArray|
 				if subShapeArray[2].is_a?(SnapPlaneRectangle)
-					absPosition, absRotation = node.toAbs( subShapeArray[0], subShapeArray[1] )
-					SnapRegistery.instance << SnapPlane.new( subShapeArray[2].snap, absPosition, absRotation )
-root = node
-root = root.parent until root.parent.nil?
-root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, absRotation )
+					register_snap_plane( node, subShapeArray )
 				elsif splitComponant.is_a?(SplitComponant)
 					node.repeat_index = tile_idx
 					node.repeat_count = tile_count
@@ -254,9 +236,8 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 		end
 	end
 
-	class ::Rules::Split < SubNodeGenerator
-		attr_accessor :axis
-		attr_accessor :splitComponant
+	class Split < SubNodeGenerator
+		attr_accessor :axis, :splitComponant
 
 		def initialize( axis, splitComponant )
 			self.axis = axis
@@ -268,14 +249,13 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 		end
 	end
 
-	class ::Rules::Creational < GenerativePart
+	class Creational < GenerativePart
 		def apply( node, position, rotation, scope )
 		end
 	end
 
-	class ::Rules::Instantiate < Creational
-		attr_accessor :shapeType
-		attr_accessor :id
+	class Instantiate < Creational
+		attr_accessor :shapeType, :id
 
 		def initialize( shapeType, id )
 			self.shapeType = shapeType
@@ -287,7 +267,7 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 		end
 	end
 
-	class ::Rules::I < Creational
+	class I < Creational
 		attr_accessor :id
 
 		def initialize( id )
@@ -301,9 +281,8 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 		end
 	end
 
-	class ::Rules::Roof < Creational
-		attr_accessor :roofType
-		attr_accessor :id
+	class Roof < Creational
+		attr_accessor :roofType, :id
 
 		def initialize( roofType, id )
 			self.roofType = roofType
@@ -311,13 +290,11 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 		end
 
 		def apply( node, position, rotation, scope )
-			if roofType == GabledRoof || true
-				Node.new( node, id, TriangularPrism.new( V3[scope.x,scope.y/4.0,scope.y]), position, V3[rotation.x-90,rotation.y,rotation.z] )
-			end
+			Node.new( node, id, TriangularPrism.new( V3[scope.x,scope.y/4.0,scope.y]), position, V3[rotation.x-90,rotation.y,rotation.z] )
 		end
 	end
 
-	class ::Rules::BindTexture < GenerativePart
+	class BindTexture < GenerativePart
 		attr_accessor :texture
 
 		def initialize( texture )
@@ -329,7 +306,7 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 		end
 	end
 
-	class ::Rules::RulesSet
+	class RulesSet
 		attr_accessor :rules
 
 		def initialize
@@ -366,7 +343,7 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 		end
 	end
 
-	class ::Rules::Size
+	class Size
 		attr_accessor :value
 
 		def initialize( value )
@@ -378,13 +355,13 @@ root << Node.new( node, "_SnapPlaneRectangle", subShapeArray[2], absPosition, ab
 		end
 	end
 
-	class ::Rules::AbsoluteSize < Size
+	class AbsoluteSize < Size
 		def to_s
 			value.to_s + "a"
 		end
 	end
 
-	class ::Rules::RelativeSize < Size
+	class RelativeSize < Size
 		def to_s
 			value.to_s + "r"
 		end
