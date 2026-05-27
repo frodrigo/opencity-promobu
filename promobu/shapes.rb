@@ -242,6 +242,48 @@ module Shapes
 	end
 
 	class ::Shapes::Cylinder < Shape3D
+		# The engine currently exports planar primitives only; represent cylinder
+		# components using box-like proxy faces so rules can still bind textures.
+		def component( splitType )
+			proxy = Box.new( V3[scope.x,scope.y,scope.z] )
+			proxy.component( splitType )
+		end
+
+		def subDivise( axis, absPartSizes )
+			returns = []
+			if axis == XAxis
+				sumAbsPartSize = 0
+				absPartSizes.each{ |absPartSize|
+					unless absPartSize.is_a?(Snap)
+						returns << [ V3[sumAbsPartSize,0,0], V3._0, Cylinder.new(V3[absPartSize,scope.y,scope.z]) ]
+						sumAbsPartSize += absPartSize
+					else
+						returns << [ V3[sumAbsPartSize,0,0], V3[0,-90,0], SnapPlaneRectangle.new(absPartSize, V2[scope.z*1.1,scope.y*1.1]) ]
+					end
+				}
+			elsif axis == YAxis
+				sumAbsPartSize = 0
+				absPartSizes.each{ |absPartSize|
+					unless absPartSize.is_a?(Snap)
+						returns << [ V3[0,sumAbsPartSize,0], V3._0, Cylinder.new(V3[scope.x,absPartSize,scope.z]) ]
+						sumAbsPartSize += absPartSize
+					else
+						returns << [ V3[0,sumAbsPartSize,0], V3[-90,0,0], SnapPlaneRectangle.new(absPartSize, V2[scope.x*1.1,scope.z*1.1]) ]
+					end
+				}
+			elsif axis == ZAxis
+				sumAbsPartSize = 0
+				absPartSizes.each{ |absPartSize|
+					unless absPartSize.is_a?(Snap)
+						returns << [ V3[0,0,sumAbsPartSize], V3._0, Cylinder.new(V3[scope.x,scope.y,absPartSize]) ]
+						sumAbsPartSize += absPartSize
+					else
+						returns << [ V3[0,0,sumAbsPartSize], V3._0, SnapPlaneRectangle.new(absPartSize, V2[scope.x*1.1,scope.y*1.1]) ]
+					end
+				}
+			end
+			returns
+		end
 	end
 
 	class ::Shapes::TriangularPrism < Shape3D
