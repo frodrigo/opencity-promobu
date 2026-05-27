@@ -258,14 +258,38 @@ module ProcedureBuildingGenerator
 	class Texture
 		attr_accessor :textureFile
 		attr_accessor :double_side
+		attr_accessor :sprite_frame
 
 		def initialize( textureFile )
 			self.textureFile = textureFile
 			self.double_side = false
+			self.sprite_frame = nil
 		end
 
 		def eql?( other )
-			self.class == other.class && self.textureFile == other.textureFile && self.double_side == other.double_side
+			self.class == other.class &&
+				self.textureFile == other.textureFile &&
+				self.double_side == other.double_side &&
+				self.sprite_frame == other.sprite_frame
+		end
+
+		# Map [u,v] in local [0..1] space to atlas space when sprite metadata exists.
+		def map_uv( u, v )
+			return [u, v] if self.sprite_frame.nil?
+
+			ax = self.sprite_frame[:x].to_f
+			ay = self.sprite_frame[:y].to_f
+			aw = self.sprite_frame[:w].to_f
+			ah = self.sprite_frame[:h].to_f
+			atlas_w = self.sprite_frame[:atlas_w].to_f
+			atlas_h = self.sprite_frame[:atlas_h].to_f
+
+			u0 = ax / atlas_w
+			u1 = (ax + aw) / atlas_w
+			v0 = ay / atlas_h
+			v1 = (ay + ah) / atlas_h
+
+			[ u0 + (u1 - u0) * u, v0 + (v1 - v0) * v ]
 		end
 	end
 

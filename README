@@ -20,3 +20,29 @@ ruby rules.rb rules/canary.yml 5 3 4
 ruby rules.rb rules/ttd.yml 10 30 10
 ruby rules.rb rules/nyc1920.yml 20 14 8
 ```
+
+Build sprite atlas from a directory of sprite images
+```sh
+ruby promobu/dir_sprite_pack.rb nyc1920 --out-dir . --output-base nyc1920-sprites
+ruby promobu/dir_sprite_pack.rb ttd --out-dir . --output-base ttd-sprites
+ruby promobu/dir_sprite_pack.rb canary --out-dir . --output-base canary-sprites
+```
+
+Build sprite atlas from SVG rect markers
+```sh
+ruby promobu/svg_rect_sprite.rb sf-central-tower.sprite.svg --out-dir . --output-base sf-central-tower-sprites
+```
+Requires ImageMagick (`magick` or `convert`) in `PATH`.
+
+Use sprite atlas textures in rules (single image + JSON sprite frames)
+```yml
+textures:
+	window_atlas:
+		type: sprite
+		file: sf-central-tower-sprites.webp
+		sprites: sf-central-tower-sprites.json
+		sprite: level-1-window
+```
+
+You can also keep `type: adapted` or `type: tiled` and add `sprites` + `sprite` to use atlas UVs.
+Optional: set `atlas_w` and `atlas_h` to force atlas image dimensions.

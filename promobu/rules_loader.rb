@@ -1,4 +1,5 @@
 require 'yaml'
+require 'json'
 
 module RulesLoader
 
@@ -14,12 +15,29 @@ module RulesLoader
   #
   def self.load( path )
     doc      = YAML.load_file( path, symbolize_names: true )
-    check_keys!( doc, %i[rules textures], "document root" )
-    textures = build_textures( doc[:textures] || {} )
+    check_keys!( doc, %i[rules textures sprite_atlas], "document root" )
+
+    # Auto-detect sprite atlas based on rule file name, or use explicit config
+    atlas_config = infer_sprite_atlas( path, doc[:sprite_atlas] )
+
+    textures = build_textures( doc[:textures] || {}, atlas_config )
     rs       = RulesSet.new
-    ( doc[:rules] || [] ).each { |r| rs << build_rule( r, textures ) }
+    ( doc[:rules] || [] ).each { |r| rs << build_rule( r, textures, atlas_config ) }
     rs
   end
+
+  def self.infer_sprite_atlas( rule_path, explicit_config )
+    return explicit_config if explicit_config.is_a?(Hash)
+
+    # Auto-detect: rules/canary.yml → rules/canary-sprites.{webp,json}
+    dir = File.dirname( rule_path )
+    base = File.basename( rule_path, '.yml' )
+    sprite_webp = File.join( dir, "#{base}-sprites.webp" )
+    sprite_json = File.join( dir, "#{base}-sprites.json" )
+
+    { file: sprite_webp, sprites: sprite_json }
+  end
+  private_class_method :infer_sprite_atlas
 
   # ── private helpers ────────────────────────────────────────────────────────
 
@@ -30,23 +48,47 @@ module RulesLoader
   end
   private_class_method :check_keys!
 
-  def self.build_textures( map )
+  def self.build_textures( map, atlas_config )
     map.transform_values { |t|
-      check_keys!( t, %i[type file sx sy double_side], "texture" )
-      build_texture_object( t )
+      # If it's a string, treat it as a sprite name
+      if t.is_a?(String) || t.is_a?(Symbol)
+        build_sprite_texture( t.to_s, atlas_config )
+      else
+        # Otherwise it's a hash config
+        check_keys!( t, %i[type file sx sy double_side sprites sprite atlas_w atlas_h], "texture" )
+        build_texture_object( t, atlas_config )
+      end
     }
   end
   private_class_method :build_textures
 
-  def self.build_texture_object( t )
+  def self.build_sprite_texture( sprite_name, atlas_config )
+    # Create a sprite texture from just the sprite name, using auto-detected atlas
+    tex = AdaptedTexture.new( atlas_config[:file].to_s )
+    apply_sprite_frame!( tex, {
+      sprites: atlas_config[:sprites],
+      sprite: sprite_name
+    } )
+    tex
+  end
+  private_class_method :build_sprite_texture
+
+  def self.build_texture_object( t, atlas_config = {} )
     case t[:type].to_s
     when 'tiled'
       tex = TiledTexture.new( t[:file].to_s, t[:sx].to_f, t[:sy].to_f )
       tex.double_side = true if t[:double_side]
+      apply_sprite_frame!( tex, t ) if t[:sprites] || t[:sprite] || (t[:sprite_name])
       tex
     when 'adapted'
       tex = AdaptedTexture.new( t[:file].to_s )
       tex.double_side = true if t[:double_side]
+      apply_sprite_frame!( tex, t ) if t[:sprites] || t[:sprite] || t[:sprite_name]
+      tex
+    when 'sprite'
+      tex = AdaptedTexture.new( t[:file].to_s )
+      tex.double_side = true if t[:double_side]
+      apply_sprite_frame!( tex, t )
       tex
     else
       raise "Unknown texture type: #{t[:type].inspect}"
@@ -54,10 +96,72 @@ module RulesLoader
   end
   private_class_method :build_texture_object
 
-  def self.build_rule( r, textures )
+  SPRITE_JSON_CACHE = {}
+
+  def self.apply_sprite_frame!( texture, t )
+    sprites_path = t[:sprites].to_s
+    sprite_name = t[:sprite].to_s
+
+    raise "Sprite texture missing :sprites JSON path" if sprites_path.empty?
+    raise "Sprite texture missing :sprite name" if sprite_name.empty?
+
+    sprites = load_sprite_json( sprites_path )
+    frame = sprites[sprite_name]
+    raise "Sprite '#{sprite_name}' not found in #{sprites_path}" if frame.nil?
+
+    atlas_w = t[:atlas_w]&.to_f
+    atlas_h = t[:atlas_h]&.to_f
+    if atlas_w.nil? || atlas_h.nil? || atlas_w <= 0 || atlas_h <= 0
+      atlas_w, atlas_h = infer_atlas_size( sprites )
+    end
+    texture.sprite_frame = {
+      x: frame.fetch('x').to_f,
+      y: frame.fetch('y').to_f,
+      w: frame.fetch('w').to_f,
+      h: frame.fetch('h').to_f,
+      atlas_w: atlas_w,
+      atlas_h: atlas_h,
+      repeat_x: !!frame['repeat_x']
+    }
+  end
+  private_class_method :apply_sprite_frame!
+
+  def self.load_sprite_json( path )
+    SPRITE_JSON_CACHE[path] ||= begin
+      json = JSON.parse( File.read( path ) )
+      raise "Invalid sprite JSON root in #{path}: expected object" unless json.is_a?(Hash)
+      json
+    end
+  rescue Errno::ENOENT
+    raise "Sprite JSON not found: #{path}"
+  rescue JSON::ParserError => e
+    raise "Invalid sprite JSON #{path}: #{e.message}"
+  end
+  private_class_method :load_sprite_json
+
+  def self.infer_atlas_size( sprites )
+    max_x = 0.0
+    max_y = 0.0
+
+    sprites.each_value do |frame|
+      next unless frame.is_a?(Hash)
+
+      x = frame.fetch('x').to_f
+      y = frame.fetch('y').to_f
+      w = frame.fetch('w').to_f
+      h = frame.fetch('h').to_f
+      max_x = [max_x, x + w].max
+      max_y = [max_y, y + h].max
+    end
+
+    [max_x, max_y]
+  end
+  private_class_method :infer_atlas_size
+
+  def self.build_rule( r, textures, atlas_config = {} )
     check_keys!( r, %i[name condition actions], "rule '#{r[:name]}'" )
     cond    = build_condition( r[:condition] )
-    actions = ( r[:actions] || [] ).flat_map { |a| build_action( a, textures ) }
+    actions = ( r[:actions] || [] ).flat_map { |a| build_action( a, textures, atlas_config ) }
     Rule.new( r[:name].to_s, cond, actions )
   end
   private_class_method :build_rule
@@ -128,7 +232,7 @@ module RulesLoader
     'Cylinder' => -> { Cylinder },
   }.freeze
 
-  def self.build_action( hash, textures )
+  def self.build_action( hash, textures, atlas_config = {} )
     key   = hash.keys.first
     value = hash[key]
 
@@ -136,7 +240,7 @@ module RulesLoader
     when :split_x, :split_y, :split_z
       axis = AXIS_MAP.fetch( key.to_s[-1] ) { raise "Unknown axis in action key: #{key}" }
       raise "#{key} value must be a list" unless value.is_a?(Array)
-      [ Split.new( axis, build_split_element( value, textures ) ) ]
+      [ Split.new( axis, build_split_element( value, textures, atlas_config ) ) ]
 
     when :component
       check_keys!( value, %i[faces rules condition], "component action" )
@@ -165,7 +269,7 @@ module RulesLoader
       rule_id = if rule_ref.is_a?(Hash)
         check_keys!( rule_ref, %i[condition actions], "anonymous instantiate rule" )
         cond    = build_condition( rule_ref[:condition] )
-        actions = ( rule_ref[:actions] || [] ).flat_map { |a| build_action( a, textures ) }
+        actions = ( rule_ref[:actions] || [] ).flat_map { |a| build_action( a, textures, atlas_config ) }
         Rule.new( nil, cond, actions )
       else
         rule_ref
@@ -182,11 +286,12 @@ module RulesLoader
       [ Translation.new( V3[ (v[:x] || 0).to_f, (v[:y] || 0).to_f, (v[:z] || 0).to_f ] ) ]
 
     when :sub_context
-      inner = value.flat_map { |a| build_action( a, textures ) }
+      inner = value.flat_map { |a| build_action( a, textures, atlas_config ) }
       [ SubContext.new( inner ) ]
 
     when :texture
-      [ BindTexture.new( resolve_texture( value, textures ) ) ]
+      tex = resolve_texture( value, textures, atlas_config )
+      [ BindTexture.new( tex ) ]
 
     else
       raise "Unknown action key: #{key.inspect}"
@@ -236,7 +341,7 @@ module RulesLoader
   end
   private_class_method :resolve_scope_delta
 
-  def self.build_split_element( elements, textures )
+  def self.build_split_element( elements, textures, atlas_config = {} )
     parts = elements.map { |e|
       if e[:snap]
         check_keys!( e, %i[snap], "split element (snap)" )
@@ -245,7 +350,7 @@ module RulesLoader
         check_keys!( e, %i[abs rel rule repeat condition], "split element" )
         size = e[:abs] ? AbsoluteSize.new( e[:abs].to_f ) : RelativeSize.new( (e[:rel] || 1).to_f )
         # The rule slot may be either a plain rule name or an inline SplitRepeat
-        sub  = e[:repeat] ? build_split_repeat( e[:repeat], textures ) : e[:rule].to_s
+        sub  = e[:repeat] ? build_split_repeat( e[:repeat], textures, atlas_config ) : e[:rule].to_s
         cond = e[:condition] ? build_condition( e[:condition].to_s ) : nil
         [ size, sub, cond ]
       end
@@ -254,7 +359,7 @@ module RulesLoader
   end
   private_class_method :build_split_element
 
-  def self.build_split_repeat( r, textures = {} )
+  def self.build_split_repeat( r, textures = {}, atlas_config = {} )
     check_keys!( r, %i[size rule elements snap last], "split repeat" )
     snap = r[:snap] ? Snap.new( r[:snap][:name].to_s, r[:snap][:size].to_f ) : nil
     last = r[:last]&.to_s
@@ -264,15 +369,34 @@ module RulesLoader
   end
   private_class_method :build_split_repeat
 
-  def self.resolve_texture( value, textures )
+  def self.resolve_texture( value, textures, atlas_config = {} )
     case value
     when String, Symbol
-      textures.fetch( value.to_sym ) {
-        raise "Undefined texture key: #{value.inspect}"
-      }
+      # First try to find it as a defined texture key
+      sym = value.to_sym
+      return textures[sym] if textures.key?(sym)
+
+      # If not found, treat it as a sprite name and create on-the-fly
+      build_sprite_texture( value.to_s, atlas_config )
     when Hash
-      check_keys!( value, %i[type file sx sy double_side], "texture action" )
-      build_texture_object( value )
+      # If no type is specified but sprite is present, treat as simplified sprite format
+      if !value.key?(:type) && value.key?(:sprite)
+        check_keys!( value, %i[sprite double_side], "simplified sprite texture" )
+        # Try to find the sprite in textures first, else treat as sprite name
+        sprite_sym = value[:sprite].to_sym
+        tex = if textures.key?(sprite_sym)
+          textures[sprite_sym]
+        else
+          build_sprite_texture( value[:sprite].to_s, atlas_config )
+        end
+        # Create a copy of the texture with double_side set if needed
+        tex_copy = tex.dup
+        tex_copy.double_side = true if value[:double_side]
+        tex_copy
+      else
+        check_keys!( value, %i[type file sx sy double_side sprites sprite atlas_w atlas_h], "texture action" )
+        build_texture_object( value )
+      end
     else
       raise "Invalid texture value: #{value.inspect}"
     end

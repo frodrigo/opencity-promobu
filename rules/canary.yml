@@ -2,9 +2,11 @@
 # Loaded by promobu/rules_loader.rb  →  RulesLoader.load("rules/canary.yml")
 
 textures:
-  wall:        { type: tiled,   file: canary/wall.png,        sx: 0.2,  sy: 0.5 }
-  wall_bottom: { type: tiled,   file: canary/wall-bottom.png, sx: 0.5,  sy: 0.16 }
-  roof:        { type: tiled,   file: canary/roof.png,        sx: 2.0,  sy: 1.67705098312484 }
+  wall: wall
+  wall_bottom: wall-bottom
+  roof: roof
+  door: door
+  window1: window1
 
 rules:
   - name: delete
@@ -102,11 +104,11 @@ rules:
 
   - name: door
     actions:
-      - texture: { type: adapted, file: canary/door.png }
+      - texture: door
 
   - name: ww
     actions:
-      - texture: { type: adapted, file: canary/window1.png }
+      - texture: window1
 
   - name: roofp
     actions:

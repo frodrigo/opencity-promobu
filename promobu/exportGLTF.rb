@@ -304,6 +304,13 @@ module Shapes
   GLTF_QUAD_IDX = [0, 2, 1,  0, 3, 2].freeze
 
   class ::Shapes::Shape
+
+    def gltf_map_uvs( base_uvs )
+      return base_uvs if texture.nil?
+
+      base_uvs.map { |u, v| texture.map_uv( u, v ) }
+    end
+
     def buildGLTFPrimitives( builder )
       []
     end
@@ -314,7 +321,7 @@ module Shapes
       sx = scope.x.to_f
       sy = scope.y.to_f
       positions = [[0, 0, 0], [sx, 0, 0], [sx, sy, 0], [0, sy, 0]]
-      uvs       = [[0, 1],   [1, 1],     [1, 0],       [0, 0]]
+      uvs       = gltf_map_uvs([[0, 1], [1, 1], [1, 0], [0, 0]])
       normals   = Array.new(4) { [0, 0, -1] }
       mat = builder.material_for( texture )
       [ builder.make_primitive( positions, uvs, normals, GLTF_QUAD_IDX.dup, mat ) ]
@@ -327,7 +334,7 @@ module Shapes
       sy = scope.y.to_f
       # Winding [0,2,1]: (v2−v0)×(v1−v0) = (sx/2,sy,0)×(sx,0,0) ∝ (0,0,−1)
       positions = [[0, 0, 0], [sx, 0, 0], [sx / 2.0, sy, 0]]
-      uvs       = [[0, 1],   [1, 1],    [0.5, 0]]
+      uvs       = gltf_map_uvs([[0, 1], [1, 1], [0.5, 0]])
       normals   = Array.new(3) { [0, 0, -1] }
       mat = builder.material_for( texture )
       [ builder.make_primitive( positions, uvs, normals, [0, 2, 1], mat ) ]
@@ -347,7 +354,7 @@ module Shapes
       face_quads( sx, sy, sz ).each do |verts, normal|
         base = positions.size
         verts.each { |v| positions << v }
-        uvs     += [[0, 1], [1, 1], [1, 0], [0, 0]]
+        uvs     += gltf_map_uvs([[0, 1], [1, 1], [1, 0], [0, 0]])
         normals += [normal] * 4
         indices += GLTF_QUAD_IDX.map { |i| base + i }
       end

@@ -2,9 +2,10 @@
 # Loaded by promobu/rules_loader.rb  →  RulesLoader.load("rules/ttd.yml")
 
 textures:
-  corner:   { type: tiled, file: ttd/corner.png,   sx: 1, sy: 1 }
-  ornement: { type: tiled, file: ttd/ornement.png,  sx: 1, sy: 1 }
-  roof:     { type: tiled, file: ttd/roof.png,      sx: 2, sy: 2 }
+  corner: corner
+  ornement: ornement
+  roof: roof
+  window: window
 
 rules:
   - name: delete
@@ -105,7 +106,7 @@ rules:
 
   - name: Window
     actions:
-      - texture: { type: adapted, file: ttd/window.png }
+      - texture: window
 
   - name: LevelCorner
     actions:
