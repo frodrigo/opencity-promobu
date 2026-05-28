@@ -13,9 +13,6 @@ include Faces
 require_relative 'promobu/snaps'
 include Snaps
 
-require_relative 'promobu/exportX3D'
-require_relative 'promobu/exportAC3D'
-require_relative 'promobu/exportSVG'
 require_relative 'promobu/exportGLTF'
 require_relative 'promobu/optimize'
 require_relative 'promobu/rules_loader'
