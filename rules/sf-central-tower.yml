@@ -1,0 +1,368 @@
+# Rule set: San Francisco Central Tower (Call Building, 703 Market St., 1898)
+# Reference: Detroit Photographic Company photograph 0041, c.1905
+# Architects: Reid Brothers  —  Beaux-Arts / Chicago Commercial style
+# 18 storeys plus dome, ~96 m total.
+#
+# Façade hierarchy for the original 1898 Call Building (bottom → top):
+#   BASE   : rusticated podium with giant arches + heavy belts
+#   SHAFT  : continuous repeating bay stack (pier + window pair + pier)
+#   CROWN  : compression belt + 4 corner cupolas + dominant central dome
+#
+# Target proportion: base : shaft : crown ~= 1 : 4 : 1.2
+#
+# Horizontal breakdown (front face, each level):
+#   abs: 4.0  cornerPier  |  rel: 1  (inner box, see *Inner rules)  |  abs: 4.0  cornerPier
+# Inside the inner box the windows repeat:
+#   abs: 0.5  pilaster (not_first)  |  rel: 1  window
+
+rules:
+  - name: delete
+    actions:
+      - instantiate: [Empty, ~]
+
+  - name: root
+    actions:
+      - split_y:
+          - { abs: 5.0, rule: groundLevel }
+          - { abs: 0.4, rule: groundBelt }
+          - { abs: 3, rule: level1Level }
+          - { abs: 0.3, rule: mezzBelt }
+          - { abs: 5.0, rule: firstShaft }
+          - { rel: 1, rule: mainShaft }
+          - { abs: 0.4, rule: shaftBelt }
+          - { abs: 5, rule: capitalLevel }
+          - { abs: 3, rule: transitionLevel }
+          - { abs: 1, rule: transitionCornice }
+          - { abs: 7, rule: atticLevel }
+
+  # ── Ground Level (rusticated base, arched storefronts) ───────────────────
+
+  - name: groundLevel
+    actions:
+      - component: { faces: side, rules: [groundLevelFace] }
+
+  - name: groundLevelFace
+    condition: front_face
+    actions:
+      - split_x:
+          - { rel: 1, rule: groundSide }
+          - { abs: 5, rule: groundLevelOuter }
+          - { rel: 1, rule: groundSide }
+
+  - name: groundSide
+    actions:
+      - split_x:
+          - repeat:
+              size: 3
+              elements:
+                - { rel: 1, rule: ground-level-wall }
+                - { abs: 2.2, rule: ground-level-side-door, condition: not_last }
+
+  - name: groundLevelOuter
+    actions:
+      - scope:       { z: 1 }
+      - translation: { x: 0, y: 0, z: -1 }
+      - instantiate:
+          - Box
+          - actions:
+              - component: { faces: front, rules: [groundLevelInner0Front] }
+              - component: { faces: right, rules: [ground-level-columns] }
+              - component: { faces: left,  rules: [ground-level-columns] }
+
+  - name: groundLevelInner0Front
+    actions:
+      - split_x:
+          - { abs: 1, rule: ground-level-columns }
+          - { rel: 3, rule: ground-level-main-door}
+          - { abs: 1, rule: ground-level-columns }
+
+  # Fallback (back / side faces):
+  - name: groundLevelFace
+    actions:
+      - split_x:
+          - repeat:
+              size: 3
+              elements:
+                - { rel: 1, rule: ground-level-wall }
+                - { abs: 2.2, rule: ground-level-side-door, condition: not_last }
+
+  # ── Level-1 / Mezzanine (podium-style, using the ground-level grammar) ───
+
+  - name: level1Level
+    actions:
+      - component: { faces: side, rules: [level1Face] }
+
+  - name: level1Face
+    condition: front_face
+    actions:
+      - split_x:
+          - { rel: 1, rule: level1Side }
+          - { abs: 5, rule: level1Center }
+          - { rel: 1, rule: level1Side }
+
+  - name: level1Side
+    actions:
+      - split_x:
+          - repeat:
+              size: 3
+              elements:
+                - { rel: 1, rule: level-1-wall }
+                - { abs: 2.2, rule: level-1-window, condition: not_last }
+
+  - name: level1Center
+    actions:
+      - scope:       { z: 1 }
+      - translation: { x: 0, y: 0, z: -1 }
+      - instantiate:
+          - Box
+          - actions:
+              - component: { faces: front, rules: [level1CenterFront] }
+              - component: { faces: right, rules: [level-1-balustrade] }
+              - component: { faces: left,  rules: [level-1-balustrade] }
+
+  - name: level1CenterFront
+    actions:
+      - split_x:
+          - { abs: 1, rule: level-1-column }
+          - { rel: 3, rule: level-1-balustrade }
+          - { abs: 1, rule: level-1-column }
+
+  # Fallback (back / side faces):
+  - name: level1Face
+    actions:
+      - split_x:
+          - repeat:
+              size: 3
+              elements:
+                - { rel: 1, rule: level-1-wall }
+                - { abs: 2.2, rule: level-1-window, condition: not_last }
+
+  # ── Main Shaft (floors 3-14, repeating 3.5 m per floor) ─────────────────
+
+  - name: firstShaft
+    actions:
+      - component: { faces: side, rules: [firstShaftFace] }
+
+  - name: firstShaftFace
+    actions:
+      - split_x:
+          - repeat:
+              size: 3
+              elements:
+                - { rel: 1, rule: level-2-3-window }
+
+  - name: mainShaft
+    actions:
+      - split_y:
+          - repeat: { size: 2.5, rule: mainShaftLevel }
+
+  - name: mainShaftLevel
+    actions:
+      - component: { faces: side, rules: [mainShaftFace] }
+
+  - name: mainShaftFace
+    actions:
+      - split_x:
+          - repeat:
+              size: 3
+              elements:
+                - { rel: 1, rule: level-intermediate-window }
+
+  # ── Capital Level (floors 15-16, ornate arched windows) ─────────────────
+
+  - name: capitalLevel
+    actions:
+      - component: { faces: side, rules: [capitalLevelFace] }
+
+  - name: capitalLevelFace
+    actions:
+      - split_x:
+          - { abs: 5, rule: level-top-3-4-side-window }
+          - { rel: 1, rule: capitalLevelFaceInner }
+          - { abs: 5, rule: level-top-3-4-side-window }
+
+  - name: capitalLevelFaceInner
+    actions:
+      - scope:       { z: -0.8 }
+      - translation: { x: 0, y: 0, z: 0.8 }
+      - instantiate:
+          - Box
+          - actions:
+              - component: { faces: front, rules: [capitalLevelFaceInnerFront] }
+              - component: { faces: right, rules: [level-top-2-4-column] }
+              - component: { faces: left,  rules: [level-top-2-4-column] }
+
+  - name: capitalLevelFaceInnerFront
+    actions:
+      - split_x:
+          - repeat:
+              size: 3.0
+              elements:
+                - { rel: 1,   rule: level-top-3-4-window }
+                - { abs: 0.5, rule: level-top-2-4-column,  condition: not_last }
+
+  # ── Transition Level ─────────────────────
+
+  - name: transitionLevel
+    actions:
+      - component: { faces: side, rules: [transitionLevelFace] }
+
+  - name: transitionLevelFace
+    actions:
+      - split_x:
+          - repeat:
+              size: 3.0
+              elements:
+                - { rel: 0.5, rule: level-top-2-colomn }
+                - { abs: 2.2,   rule: level-top-2-window, condition: not_last }
+
+  # ── Attic Level (floors 15-16, ornate arched windows) ─────────────────
+
+  - name: atticLevel
+    actions:
+      - component: { faces: side, rules: [atticLevelFace] }
+
+  - name: atticLevelFace
+    actions:
+      - split_x:
+          - { abs: 5, rule: level-top-1-side-window }
+          - { rel: 1, rule: atticLevelFaceInner }
+          - { abs: 5, rule: level-top-1-side-window }
+
+  - name: atticLevelFaceInner
+    actions:
+      - scope:       { z: -0.8 }
+      - translation: { x: 0, y: 0, z: 0.8 }
+      - instantiate:
+          - Box
+          - actions:
+              - component: { faces: front, rules: [atticLevelFaceInnerFront] }
+              - component: { faces: right, rules: [level-top-1-column] }
+              - component: { faces: left,  rules: [level-top-1-column] }
+
+  - name: atticLevelFaceInnerFront
+    actions:
+      - split_x:
+          - repeat:
+              size: 3.0
+              elements:
+                - { rel: 1,   rule: level-top-1-window }
+                - { abs: 0.5, rule: level-top-1-column,  condition: not_last }
+
+  # ── Belt Courses / Cornices (scope-extruded boxes) ───────────────────────
+
+  - name: groundBelt
+    actions:
+      - scope:       { dx: 0.6, dz: 0.6 }
+      - translation: { x: -0.3, y: 0, z: -0.3 }
+      - component:   { faces: all, rules: [level-1-base] }
+
+  - name: mezzBelt
+    actions:
+      - scope:       { dx: 0.4, dz: 0.4 }
+      - translation: { x: -0.2, y: 0, z: -0.2 }
+      - component:   { faces: all, rules: [base-level-top-1-bottom] }
+
+  - name: shaftBelt
+    actions:
+      - scope:       { dx: 0.4, dz: 0.4 }
+      - translation: { x: -0.2, y: 0, z: -0.2 }
+      - component:   { faces: all, rules: [base-level-top-1] }
+
+  # Transition belt before the dome cluster (visual deceleration zone)
+  - name: transitionCornice
+    actions:
+      - scope:       { dx: 0.8, dz: 0.8 }
+      - translation: { x: -0.4, y: 0, z: -0.4 }
+      - component:   { faces: side, rules: [base-level-top-1] }
+      - component:   { faces: top, rules: [base-level-top-1-bottom] }
+      - component:   { faces: bottom, rules: [base-level-top-1-bottom] }
+
+  # ── Textures ──────────────────────────────────────────────────────────────
+  # Use atlas + sprite JSON generated by promobu/svg_rect_sprite.rb
+  # Atlas image: sf-central-tower-sprites.webp
+  # Sprite map:  sf-central-tower-sprites.json
+
+  - name: ground-level-columns
+    actions:
+      - texture: ground-level-columns
+
+  - name: ground-level-side-door
+    actions:
+      - texture: ground-level-side-door
+
+  - name: ground-level-wall
+    actions:
+      - texture: ground-level-wall
+
+  - name: ground-level-main-door
+    actions:
+      - texture: ground-level-main-door
+
+  - name: level-1-column
+    actions:
+      - texture: level-1-column
+
+  - name: level-1-wall
+    actions:
+      - texture: level-1-wall
+
+  - name: level-1-balustrade
+    actions:
+      - texture: level-1-balustrade
+
+  - name: level-1-window
+    actions:
+      - texture: level-1-window
+
+  - name: level-top-2-4-column
+    actions:
+      - texture: level-top-2-4-column
+
+  - name: level-2-3-window
+    actions:
+      - texture: level-2-3-window
+
+  - name: level-top-1-column
+    actions:
+      - texture: level-top-1-column
+
+  - name: level-top-1-side-window
+    actions:
+      - texture: level-top-1-side-window
+
+  - name: level-top-3-4-window
+    actions:
+      - texture: level-top-3-4-window
+
+  - name: level-top-3-4-side-window
+    actions:
+      - texture: level-top-3-4-side-window
+
+  - name: level-top-2-colomn
+    actions:
+      - texture: level-top-2-colomn
+
+  - name: level-top-2-window
+    actions:
+      - texture: level-top-2-window
+
+  - name: level-1-base
+    actions:
+      - texture: level-1-base
+
+  - name: base-level-top-1-bottom
+    actions:
+      - texture: base-level-top-1-bottom
+
+  - name: base-level-top-1
+    actions:
+      - texture: base-level-top-1
+
+  - name: level-intermediate-window
+    actions:
+      - texture: level-intermediate-window
+
+  - name: level-top-1-window
+    actions:
+      - texture: level-top-1-window

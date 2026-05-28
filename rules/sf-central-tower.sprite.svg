@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg1"
+   width="441"
+   height="1134"
+   viewBox="0 0 441 1134"
+   sodipodi:docname="sf-central-tower.sprite.svg"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#cccccc"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="1"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.25224"
+     inkscape:cx="0"
+     inkscape:cy="583.35464"
+     inkscape:window-width="1882"
+     inkscape:window-height="1061"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g1" />
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g1">
+    <image
+       width="441"
+       height="1134"
+       preserveAspectRatio="none"
+       xlink:href="sf-central-tower.webp"
+       id="image1" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.2"
+       id="ground-level-columns"
+       width="37.080162"
+       height="222.88754"
+       x="282.19443"
+       y="911.11243" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.2"
+       id="level-1-base-repeat-x"
+       width="37.080162"
+       height="15.167238"
+       x="282.19443"
+       y="894.31812" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.2"
+       id="level-1-column"
+       width="33.80761"
+       height="29.41247"
+       x="282.19443"
+       y="864.90564" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.2"
+       id="level-1-balustrade-repeat-x"
+       width="20.067602"
+       height="29.41247"
+       x="251.70338"
+       y="864.90564" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.2"
+       id="groud-level-wall-repeat-x"
+       width="27.22245"
+       height="222.88754"
+       x="12.249976"
+       y="911.11243" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.2"
+       id="groud-level-side-door"
+       width="62.836502"
+       height="222.88754"
+       x="39.472427"
+       y="911.11243" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.2"
+       id="level-1-window"
+       width="61.991383"
+       height="63.576618"
+       x="37.579758"
+       y="830.25903" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="level-2-3-window"
+       width="80.737991"
+       height="136.40039"
+       x="27.727903"
+       y="687.82092" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="level-intermediate-window"
+       width="80.737991"
+       height="63.52404"
+       x="27.727901"
+       y="624.29688" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="level-top-2-4-base-repeat-x"
+       width="80.737991"
+       height="27.223375"
+       x="27.727903"
+       y="597.07349"
+       inkscape:transform-center-x="1.0647633"
+       inkscape:transform-center-y="35.820077" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="level-top-3-4-side-window"
+       width="88.712578"
+       height="120.80519"
+       x="17.844482"
+       y="476.26831" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="level-top-2-colomn"
+       width="26.702227"
+       height="53.347984"
+       x="16.587517"
+       y="422.92032" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="level-top-2-window"
+       width="38.852905"
+       height="53.347984"
+       x="43.289742"
+       y="422.92032"
+       inkscape:transform-center-x="48.771762"
+       inkscape:transform-center-y="1.2569666" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="base-level-top-1-bottom-repeat-x"
+       width="48.489651"
+       height="11.868088"
+       x="43.289742"
+       y="411.05222"
+       inkscape:transform-center-x="60.868693"
+       inkscape:transform-center-y="0.27962419" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="base-level-top-1-repeat-x"
+       width="48.489651"
+       height="9.7731438"
+       x="43.289742"
+       y="401.27905"
+       inkscape:transform-center-x="60.868693"
+       inkscape:transform-center-y="0.23026123" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="level-top-1-side-window"
+       width="89.131569"
+       height="86.448105"
+       x="16.223925"
+       y="313.68832"
+       inkscape:transform-center-x="111.88619"
+       inkscape:transform-center-y="2.0368011" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="level-top-1-window"
+       width="28.797176"
+       height="86.448105"
+       x="183.28741"
+       y="313.68832"
+       inkscape:transform-center-x="36.148883"
+       inkscape:transform-center-y="2.0368011" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="level-top-1-column"
+       width="13.294589"
+       height="86.448105"
+       x="212.08459"
+       y="313.68829"
+       inkscape:transform-center-x="16.688599"
+       inkscape:transform-center-y="2.0368011" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="level-top-3-4-window"
+       width="62.077778"
+       height="120.80519"
+       x="187.88196"
+       y="476.26831" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="level-top-2-4-column"
+       width="15.264626"
+       height="120.80519"
+       x="172.61732"
+       y="476.26831" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.2"
+       id="level-1-wall-repeat-x"
+       width="20.038931"
+       height="63.576618"
+       x="99.571136"
+       y="830.25903" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.199999"
+       id="groud-level-main-door"
+       width="115.46756"
+       height="222.88754"
+       x="162.67812"
+       y="911.11243" />
+  </g>
+</svg>
