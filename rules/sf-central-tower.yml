@@ -34,7 +34,7 @@ rules:
           - { abs: 3, rule: transitionLevel }
           - { abs: 1, rule: transitionCornice }
           - { abs: 7, rule: atticLevel }
-          - { abs: 3, rule: cylinderCrown }
+          - { abs: 10, rule: cupola }
 
   # ── Ground Level (rusticated base, arched storefronts) ───────────────────
 
@@ -199,6 +199,7 @@ rules:
               - component: { faces: front, rules: [capitalLevelFaceInnerFront] }
               - component: { faces: right, rules: [level-top-2-4-column] }
               - component: { faces: left,  rules: [level-top-2-4-column] }
+              - component: { faces: top,   rules: [base-level-top-1] }
 
   - name: capitalLevelFaceInnerFront
     actions:
@@ -259,42 +260,68 @@ rules:
 
   # ── Cylinder Crown (1 central + 4 corner cylinders, untextured) ─────────
 
-  - name: cylinderCrown
+  - name: cupola
+    actions:
+      - scope: { dx: -4, dz: -4 }
+      - translation: { x: 2, y: -1, z: 2 }
+      - i: cupolaCorner
+      - i: cupolaMain
+
+  - name: cupolaCorner
     actions:
       - split_x:
-          - { abs: 3, rule: cylinderCornerStrip }
-          - { rel: 1, rule: cylinderCornerCentral }
-          - { abs: 3, rule: cylinderCornerStrip }
-
-  - name: cylinderCornerStrip
-    actions:
-      - split_z:
-          - { abs: 3, rule: cylinderCornerSmall }
+          - { abs: 3, rule: cupolaCornerStrip }
           - { rel: 1, rule: delete }
-          - { abs: 3, rule: cylinderCornerSmall }
+          - { abs: 3, rule: cupolaCornerStrip }
 
-  - name: cylinderCornerCentral
+  - name: cupolaCornerStrip
     actions:
       - split_z:
-          - { abs: 3, rule: delete }
-          - { rel: 1, rule: cylinderMainZone }
-          - { abs: 3, rule: delete }
+          - { abs: 3, rule: cupolaCornerSmall }
+          - { rel: 1, rule: delete }
+          - { abs: 3, rule: cupolaCornerSmall }
 
-  - name: cylinderMainZone
+  - name: cupolaCornerSmall
     actions:
-      - translation: { y: -1 }
+      - split_y:
+          - { abs: 3, rule: cupolaCornerSmallBottom }
+          - { rel: 1, rule: delete }
+
+  - name: cupolaCornerSmallBottom
+    actions:
       - instantiate:
           - Cylinder
+          - { segments: 8 }
           - actions:
-              - component: { faces: side, rules: [base-level-top-1] }
+              - component: { faces: side, rules: [crown-small] }
 
-  - name: cylinderCornerSmall
+  - name: cupolaMain
     actions:
-      - translation: { y: -1 }
+      - split_y:
+          - { abs: 3, rule: cylinderMain }
+          - { rel: 1, rule: cupolaMainTop }
+
+  - name: cylinderMain
+    actions:
       - instantiate:
           - Cylinder
+          - { segments: 16 }
           - actions:
-              - component: { faces: side, rules: [base-level-top-1] }
+             - component: { faces: side, rules: [cylinderMainParts] }
+
+  - name: cylinderMainParts
+    actions:
+      - split_y:
+          - { abs: 2, rule: crown-window }
+          - { rel: 1, rule: crown-window-top }
+
+  - name: cupolaMainTop
+    actions:
+      - instantiate:
+          - Cupola
+          - { segments: 16, levels: 3 }
+          - actions:
+             - component: { faces: side, rules: [crown-circle-1] }
 
   # ── Belt Courses / Cornices (scope-extruded boxes) ───────────────────────
 
@@ -413,3 +440,27 @@ rules:
   - name: level-top-1-side-window
     actions:
       - texture: { sprite: level-top-1-side-window, double_side: true }
+
+  - name: crown-window
+    actions:
+      - texture: crown-window
+
+  - name: crown-window-top
+    actions:
+      - texture: crown-window-top
+
+  - name: crown-small
+    actions:
+      - texture: crown-small
+
+  - name: crown-circle-1
+    actions:
+      - texture: crown-circle-1
+
+  - name: crown-circle-2
+    actions:
+      - texture: crown-circle-2
+
+  - name: crown-circle-3
+    actions:
+      - texture: crown-circle-3
