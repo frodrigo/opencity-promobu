@@ -378,4 +378,155 @@ module Shapes
     end
   end
 
+  class ::Shapes::Cylinder < Shape3D
+    # Build a true cylinder mesh (elliptical if scope.x != scope.z), aligned on Y.
+    # The cylinder fills the local scope box: x:[0..scope.x], y:[0..scope.y], z:[0..scope.z].
+    def buildGLTFPrimitives( builder )
+      sx = scope.x.to_f
+      sy = scope.y.to_f
+      sz = scope.z.to_f
+      return [] if sx <= 0.0 || sy <= 0.0 || sz <= 0.0
+
+      segments = 32
+      cx = sx / 2.0
+      cz = sz / 2.0
+      rx = sx / 2.0
+      rz = sz / 2.0
+
+      positions = []
+      uvs       = []
+      normals   = []
+      indices   = []
+
+      # Side strip (smooth normals, seam duplicated at i=segments).
+      (0..segments).each do |i|
+        t = (2.0 * Math::PI * i) / segments
+        ct = Math.cos( t )
+        st = Math.sin( t )
+        x = cx + rx * ct
+        z = cz + rz * st
+        # Approximate outward normal for an ellipse from the implicit form.
+        nx = ct / [rx, 1.0e-9].max
+        nz = st / [rz, 1.0e-9].max
+        nlen = Math.sqrt( nx * nx + nz * nz )
+        nx /= nlen
+        nz /= nlen
+        u = i.to_f / segments
+
+        positions << [x, 0.0, z]
+        positions << [x, sy,  z]
+        uvs << [u, 1.0]
+        uvs << [u, 0.0]
+        normals << [nx, 0.0, nz]
+        normals << [nx, 0.0, nz]
+      end
+
+      (0...segments).each do |i|
+        b0 = 2 * i
+        t0 = b0 + 1
+        b1 = 2 * (i + 1)
+        t1 = b1 + 1
+        indices += [b0, t0, t1,  b0, t1, b1]
+      end
+
+      # Top cap (+Y)
+      top_center = positions.size
+      positions << [cx, sy, cz]
+      uvs << [0.5, 0.5]
+      normals << [0.0, 1.0, 0.0]
+      top_ring = []
+      (0...segments).each do |i|
+        t = (2.0 * Math::PI * i) / segments
+        x = cx + rx * Math.cos( t )
+        z = cz + rz * Math.sin( t )
+        top_ring << positions.size
+        positions << [x, sy, z]
+        uvs << [x / sx, 1.0 - (z / sz)]
+        normals << [0.0, 1.0, 0.0]
+      end
+      (0...segments).each do |i|
+        i0 = top_ring[i]
+        i1 = top_ring[(i + 1) % segments]
+        indices += [top_center, i1, i0]
+      end
+
+      # Bottom cap (-Y)
+      bottom_center = positions.size
+      positions << [cx, 0.0, cz]
+      uvs << [0.5, 0.5]
+      normals << [0.0, -1.0, 0.0]
+      bottom_ring = []
+      (0...segments).each do |i|
+        t = (2.0 * Math::PI * i) / segments
+        x = cx + rx * Math.cos( t )
+        z = cz + rz * Math.sin( t )
+        bottom_ring << positions.size
+        positions << [x, 0.0, z]
+        uvs << [x / sx, 1.0 - (z / sz)]
+        normals << [0.0, -1.0, 0.0]
+      end
+      (0...segments).each do |i|
+        i0 = bottom_ring[i]
+        i1 = bottom_ring[(i + 1) % segments]
+        indices += [bottom_center, i0, i1]
+      end
+
+      mat = builder.material_for( texture )
+      [ builder.make_primitive( positions, gltf_map_uvs( uvs ), normals, indices, mat ) ]
+    end
+  end
+
+  class ::Shapes::CylinderSide < Shape3D
+    # Build only the lateral cylinder surface (no top/bottom caps), aligned on Y.
+    def buildGLTFPrimitives( builder )
+      sx = scope.x.to_f
+      sy = scope.y.to_f
+      sz = scope.z.to_f
+      return [] if sx <= 0.0 || sy <= 0.0 || sz <= 0.0
+
+      segments = 32
+      cx = sx / 2.0
+      cz = sz / 2.0
+      rx = sx / 2.0
+      rz = sz / 2.0
+
+      positions = []
+      uvs       = []
+      normals   = []
+      indices   = []
+
+      (0..segments).each do |i|
+        t = (2.0 * Math::PI * i) / segments
+        ct = Math.cos( t )
+        st = Math.sin( t )
+        x = cx + rx * ct
+        z = cz + rz * st
+        nx = ct / [rx, 1.0e-9].max
+        nz = st / [rz, 1.0e-9].max
+        nlen = Math.sqrt( nx * nx + nz * nz )
+        nx /= nlen
+        nz /= nlen
+        u = i.to_f / segments
+
+        positions << [x, 0.0, z]
+        positions << [x, sy,  z]
+        uvs << [u, 1.0]
+        uvs << [u, 0.0]
+        normals << [nx, 0.0, nz]
+        normals << [nx, 0.0, nz]
+      end
+
+      (0...segments).each do |i|
+        b0 = 2 * i
+        t0 = b0 + 1
+        b1 = 2 * (i + 1)
+        t1 = b1 + 1
+        indices += [b0, t0, t1,  b0, t1, b1]
+      end
+
+      mat = builder.material_for( texture )
+      [ builder.make_primitive( positions, gltf_map_uvs( uvs ), normals, indices, mat ) ]
+    end
+  end
+
 end

@@ -92,4 +92,39 @@ module Shapes
 			shape.add_element( "Box", {"size"=>"#{scope.x} #{scope.y} #{scope.z}"} )
 		end
 	end
+
+	class ::Shapes::Cylinder < Shape3D
+		def exportX3D( node )
+			# Use a unit cylinder and scale it to the current scope so non-circular
+			# footprints (scope.x != scope.z) are represented as elliptic cylinders.
+			node = node.add_element(
+				"Transform",
+				{
+					"translation"=>"#{scope.x/2.0} #{scope.y/2.0} #{scope.z/2.0}",
+					"scale"=>"#{scope.x} #{scope.y} #{scope.z}"
+				}
+			)
+			shape = node.add_element( "Shape" )
+			super( shape )
+			shape.add_element( "Cylinder", {"height"=>"1", "radius"=>"0.5"} )
+		end
+	end
+
+	class ::Shapes::CylinderSide < Shape3D
+		def exportX3D( node )
+			node = node.add_element(
+				"Transform",
+				{
+					"translation"=>"#{scope.x/2.0} #{scope.y/2.0} #{scope.z/2.0}",
+					"scale"=>"#{scope.x} #{scope.y} #{scope.z}"
+				}
+			)
+			shape = node.add_element( "Shape" )
+			super( shape )
+			shape.add_element(
+				"Cylinder",
+				{"height"=>"1", "radius"=>"0.5", "top"=>"false", "bottom"=>"false"}
+			)
+		end
+	end
 end

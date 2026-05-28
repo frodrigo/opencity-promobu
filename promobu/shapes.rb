@@ -242,11 +242,17 @@ module Shapes
 	end
 
 	class ::Shapes::Cylinder < Shape3D
-		# The engine currently exports planar primitives only; represent cylinder
-		# components using box-like proxy faces so rules can still bind textures.
+		# Keep side-face components as real cylinders but without top/bottom caps.
 		def component( splitType )
-			proxy = Box.new( V3[scope.x,scope.y,scope.z] )
-			proxy.component( splitType )
+			if splitType == SideFaces
+				[ [ V3._0, V3._0, CylinderSide.new(V3[scope.x,scope.y,scope.z]) ] ]
+			elsif splitType == FrontFace || splitType == BackFace || splitType == LeftFace ||
+				splitType == RightFace
+				[ [ V3._0, V3._0, Cylinder.new(V3[scope.x,scope.y,scope.z]) ] ]
+			else
+				proxy = Box.new( V3[scope.x,scope.y,scope.z] )
+				proxy.component( splitType )
+			end
 		end
 
 		def subDivise( axis, absPartSizes )
@@ -283,6 +289,12 @@ module Shapes
 				}
 			end
 			returns
+		end
+	end
+
+	class ::Shapes::CylinderSide < Shape3D
+		def subDivise( axis, absPartSizes )
+			Cylinder.new( scope ).subDivise( axis, absPartSizes )
 		end
 	end
 

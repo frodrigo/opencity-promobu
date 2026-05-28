@@ -34,6 +34,7 @@ rules:
           - { abs: 3, rule: transitionLevel }
           - { abs: 1, rule: transitionCornice }
           - { abs: 7, rule: atticLevel }
+          - { abs: 3, rule: cylinderCrown }
 
   # ── Ground Level (rusticated base, arched storefronts) ───────────────────
 
@@ -248,6 +249,45 @@ rules:
               elements:
                 - { rel: 1,   rule: level-top-1-window }
                 - { abs: 0.5, rule: level-top-1-column,  condition: not_last }
+
+  # ── Cylinder Crown (1 central + 4 corner cylinders, untextured) ─────────
+
+  - name: cylinderCrown
+    actions:
+      - split_x:
+          - { abs: 3, rule: cylinderCornerStrip }
+          - { rel: 1, rule: cylinderCornerCentral }
+          - { abs: 3, rule: cylinderCornerStrip }
+
+  - name: cylinderCornerStrip
+    actions:
+      - split_z:
+          - { abs: 3, rule: cylinderCornerSmall }
+          - { rel: 1, rule: delete }
+          - { abs: 3, rule: cylinderCornerSmall }
+
+  - name: cylinderCornerCentral
+    actions:
+      - split_z:
+          - { abs: 3, rule: delete }
+          - { rel: 1, rule: cylinderMainZone }
+          - { abs: 3, rule: delete }
+
+  - name: cylinderMainZone
+    actions:
+      - translation: { y: -1 }
+      - instantiate:
+          - Cylinder
+          - actions:
+              - component: { faces: side, rules: [base-level-top-1] }
+
+  - name: cylinderCornerSmall
+    actions:
+      - translation: { y: -1 }
+      - instantiate:
+          - Cylinder
+          - actions:
+              - component: { faces: side, rules: [base-level-top-1] }
 
   # ── Belt Courses / Cornices (scope-extruded boxes) ───────────────────────
 
