@@ -5,10 +5,12 @@ module Shapes
 		attr_accessor :scope
 		attr_accessor :texture
 		attr_accessor :segments
+		attr_accessor :levels
 
 		def initialize( scope, options=nil )
 			self.scope = scope
 			self.segments = options[:segments].to_i if options.is_a?(Hash) && options[:segments]
+			self.levels = options[:levels].to_i if options.is_a?(Hash) && options[:levels]
 		end
 
 		def component( splitType )
@@ -330,6 +332,59 @@ module Shapes
 			end
 			returns
 		end
+	end
+
+	class ::Shapes::Cupola < Shape3D
+		def component( splitType )
+			if splitType == SideFaces
+				[ [ V3._0, V3._0, self.class.new(V3[scope.x,scope.y,scope.z], segments: segments, levels: levels) ] ]
+			elsif splitType == FrontFace || splitType == BackFace || splitType == LeftFace ||
+				splitType == RightFace
+				[ [ V3._0, V3._0, self.class.new(V3[scope.x,scope.y,scope.z], segments: segments, levels: levels) ] ]
+			else
+				proxy = Box.new( V3[scope.x,scope.y,scope.z] )
+				proxy.component( splitType )
+			end
+		end
+
+		def subDivise( axis, absPartSizes )
+			returns = []
+			if axis == XAxis
+				sumAbsPartSize = 0
+				absPartSizes.each{ |absPartSize|
+					unless absPartSize.is_a?(Snap)
+						returns << [ V3[sumAbsPartSize,0,0], V3._0, self.class.new(V3[absPartSize,scope.y,scope.z], segments: segments, levels: levels) ]
+						sumAbsPartSize += absPartSize
+					else
+						returns << [ V3[sumAbsPartSize,0,0], V3[0,-90,0], SnapPlaneRectangle.new(absPartSize, V2[scope.z*1.1,scope.y*1.1]) ]
+					end
+				}
+			elsif axis == YAxis
+				sumAbsPartSize = 0
+				absPartSizes.each{ |absPartSize|
+					unless absPartSize.is_a?(Snap)
+						returns << [ V3[0,sumAbsPartSize,0], V3._0, self.class.new(V3[scope.x,absPartSize,scope.z], segments: segments, levels: levels) ]
+						sumAbsPartSize += absPartSize
+					else
+						returns << [ V3[0,sumAbsPartSize,0], V3[-90,0,0], SnapPlaneRectangle.new(absPartSize, V2[scope.x*1.1,scope.z*1.1]) ]
+					end
+				}
+			elsif axis == ZAxis
+				sumAbsPartSize = 0
+				absPartSizes.each{ |absPartSize|
+					unless absPartSize.is_a?(Snap)
+						returns << [ V3[0,0,sumAbsPartSize], V3._0, self.class.new(V3[scope.x,scope.y,absPartSize], segments: segments, levels: levels) ]
+						sumAbsPartSize += absPartSize
+					else
+						returns << [ V3[0,0,sumAbsPartSize], V3._0, SnapPlaneRectangle.new(absPartSize, V2[scope.x*1.1,scope.y*1.1]) ]
+					end
+				}
+			end
+			returns
+		end
+	end
+
+	class ::Shapes::CupolaSide < Cupola
 	end
 
 	class ::Shapes::TriangularPrism < Shape3D

@@ -493,4 +493,110 @@ module Shapes
     end
   end
 
+  class ::Shapes::Cupola < Shape3D
+    # Build a pointed cupola mesh aligned on Y.
+    # The base is the same footprint as a cylinder, and the profile tapers to
+    # a point at the top. The height is split into +levels+ stacked bands.
+    def buildGLTFPrimitives( builder )
+      emit_cupola_primitives( builder, bottom_cap: true )
+    end
+
+    private
+
+    def cupola_levels
+      [ (self.levels || 1).to_i, 1 ].max
+    end
+
+    def emit_cupola_primitives( builder, bottom_cap: )
+      sx = scope.x.to_f
+      sy = scope.y.to_f
+      sz = scope.z.to_f
+      return [] if sx <= 0.0 || sy <= 0.0 || sz <= 0.0
+
+      segments = [ (self.segments || 12).to_i, 3 ].max
+      levels   = cupola_levels
+      level_h  = sy / levels.to_f
+      cx = sx / 2.0
+      cz = sz / 2.0
+      rx = sx / 2.0
+      rz = sz / 2.0
+
+      positions = []
+      uvs       = []
+      normals   = []
+      indices   = []
+
+      ring_points = (0...segments).map do |i|
+        t = (2.0 * Math::PI * i) / segments
+        [ Math.cos(t), Math.sin(t), t ]
+      end
+
+      rings = (0..levels).map do |level|
+        t = level / levels.to_f
+        scale = Math.sqrt(1.0 - t * t)
+        y = level * level_h
+        ring_points.map { |cos_t, sin_t, a| [ cx + rx * scale * cos_t, y, cz + rz * scale * sin_t, a, scale ] }
+      end
+
+      (0...levels).each do |level|
+        lower = rings[level]
+        upper = rings[level + 1]
+        (0...segments).each do |i|
+          x0, y0, z0, a0, _s0 = lower[i]
+          x1, y1, z1, a1, s1  = upper[i]
+          x2, y2, z2, _a2, _s2 = upper[(i + 1) % segments]
+          x3, y3, z3, _a3, _s3 = lower[(i + 1) % segments]
+
+          if s1 > 0.0001
+            base = positions.size
+            positions += [[x0, y0, z0], [x3, y3, z3], [x2, y2, z2], [x1, y1, z1]]
+            edge_len = Math.sqrt( (x3 - x0) * (x3 - x0) + (z3 - z0) * (z3 - z0) )
+            uvs += gltf_map_uvs([[0, 1], [1, 1], [1, 0], [0, 0]], edge_len, level_h)
+            nx = Math.cos( (a0 + a1) / 2.0 )
+            nz = Math.sin( (a0 + a1) / 2.0 )
+            normals += [[nx, 0.0, nz]] * 4
+            indices += GLTF_QUAD_IDX.map { |j| base + j }
+          else
+            apex = [ cx, sy, cz ]
+            base = positions.size
+            positions += [[x0, y0, z0], [x3, y3, z3], apex]
+            edge_len = Math.sqrt( (x3 - x0) * (x3 - x0) + (z3 - z0) * (z3 - z0) )
+            uvs += gltf_map_uvs([[0, 1], [1, 1], [0.5, 0]], edge_len, level_h)
+            nx = Math.cos( (a0 + a1) / 2.0 )
+            nz = Math.sin( (a0 + a1) / 2.0 )
+            normals += [[nx, 0.0, nz], [nx, 0.0, nz], [0.0, 1.0, 0.0]]
+            indices += [base, base + 2, base + 1]
+          end
+        end
+      end
+
+      if bottom_cap
+        bottom_center = positions.size
+        positions << [cx, 0.0, cz]
+        uvs << [0.5, 0.5]
+        normals << [0.0, -1.0, 0.0]
+        bottom_ring = rings.first.map do |x, y, z, _a, _s|
+          positions.size.tap do
+            positions << [x, y, z]
+            uvs << [0.5 + (x - cx) / sx, 0.5 - (z - cz) / sz]
+            normals << [0.0, -1.0, 0.0]
+          end
+        end
+        (0...segments).each do |i|
+          indices += [bottom_center, bottom_ring[i], bottom_ring[(i + 1) % segments]]
+        end
+      end
+
+      mat = builder.material_for( texture )
+      [ builder.make_primitive( positions, uvs, normals, indices, mat ) ]
+    end
+  end
+
+  class ::Shapes::CupolaSide < Cupola
+    # Build only the pointed cupola side surface (no bottom cap).
+    def buildGLTFPrimitives( builder )
+      emit_cupola_primitives( builder, bottom_cap: false )
+    end
+  end
+
 end

@@ -253,6 +253,7 @@ module RulesLoader
     'Empty'    => -> { Empty    },
     'Box'      => -> { Box      },
     'Cylinder' => -> { Cylinder },
+    'Cupola'   => -> { Cupola   },
   }.freeze
 
   def self.build_action( hash, textures, atlas_config = {} )
