@@ -112,6 +112,13 @@ rules:
 
   - name: level1Center
     actions:
+      - i: level1Side
+      - split_y:
+          - { abs: 1.5, rule: level1CenterBottom }
+          - { rel: 1, rule: delete }
+
+  - name: level1CenterBottom
+    actions:
       - scope:       { z: 1 }
       - translation: { x: 0, y: 0, z: -1 }
       - instantiate:
@@ -341,7 +348,7 @@ rules:
 
   - name: level-1-column
     actions:
-      - texture: level-1-column
+      - texture: { sprite: level-1-column, double_side: true }
 
   - name: level-1-wall
     actions:
@@ -349,7 +356,7 @@ rules:
 
   - name: level-1-balustrade
     actions:
-      - texture: level-1-balustrade
+      - texture: { sprite: level-1-balustrade, double_side: true }
 
   - name: level-1-window
     actions:
@@ -362,14 +369,6 @@ rules:
   - name: level-2-3-window
     actions:
       - texture: level-2-3-window
-
-  - name: level-top-1-column
-    actions:
-      - texture: level-top-1-column
-
-  - name: level-top-1-side-window
-    actions:
-      - texture: level-top-1-side-window
 
   - name: level-top-3-4-window
     actions:
@@ -405,4 +404,12 @@ rules:
 
   - name: level-top-1-window
     actions:
-      - texture: level-top-1-window
+      - texture: { sprite: level-top-1-window, double_side: true }
+
+  - name: level-top-1-column
+    actions:
+      - texture: { sprite: level-top-1-column, double_side: true }
+
+  - name: level-top-1-side-window
+    actions:
+      - texture: { sprite: level-top-1-side-window, double_side: true }
