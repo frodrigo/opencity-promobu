@@ -1,5 +1,6 @@
 require 'yaml'
 require 'json'
+require 'shellwords'
 
 module RulesLoader
 
@@ -66,6 +67,7 @@ module RulesLoader
     # Create a sprite texture from just the sprite name, using auto-detected atlas
     tex = AdaptedTexture.new( atlas_config[:file].to_s )
     apply_sprite_frame!( tex, {
+      file: atlas_config[:file],
       sprites: atlas_config[:sprites],
       sprite: sprite_name
     } )
@@ -112,7 +114,7 @@ module RulesLoader
     atlas_w = t[:atlas_w]&.to_f
     atlas_h = t[:atlas_h]&.to_f
     if atlas_w.nil? || atlas_h.nil? || atlas_w <= 0 || atlas_h <= 0
-      atlas_w, atlas_h = infer_atlas_size( sprites )
+      atlas_w, atlas_h = probe_image_size( t[:file].to_s ) || infer_atlas_size( sprites )
     end
     texture.sprite_frame = {
       x: frame.fetch('x').to_f,
@@ -125,6 +127,27 @@ module RulesLoader
     }
   end
   private_class_method :apply_sprite_frame!
+
+  def self.probe_image_size( path )
+    return nil if path.nil? || path.empty? || !File.exist?( path )
+
+    if system( 'which identify > /dev/null 2>&1' )
+      out = `identify -format "%w %h" #{Shellwords.escape(path)} 2>/dev/null`.strip
+      if out =~ /\A(\d+)\s+(\d+)\z/
+        return [Regexp.last_match(1).to_f, Regexp.last_match(2).to_f]
+      end
+    end
+
+    if system( 'which magick > /dev/null 2>&1' )
+      out = `magick identify -format "%w %h" #{Shellwords.escape(path)} 2>/dev/null`.strip
+      if out =~ /\A(\d+)\s+(\d+)\z/
+        return [Regexp.last_match(1).to_f, Regexp.last_match(2).to_f]
+      end
+    end
+
+    nil
+  end
+  private_class_method :probe_image_size
 
   def self.load_sprite_json( path )
     SPRITE_JSON_CACHE[path] ||= begin
