@@ -26,8 +26,8 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="1.25224"
-     inkscape:cx="0"
-     inkscape:cy="583.35464"
+     inkscape:cx="56.299112"
+     inkscape:cy="863.65234"
      inkscape:window-width="1882"
      inkscape:window-height="1061"
      inkscape:window-x="0"
@@ -74,14 +74,14 @@
        y="864.90564" />
     <rect
        style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.2"
-       id="groud-level-wall-repeat-x"
+       id="ground-level-wall-repeat-x"
        width="27.22245"
        height="222.88754"
        x="12.249976"
        y="911.11243" />
     <rect
        style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.2"
-       id="groud-level-side-door"
+       id="ground-level-side-door"
        width="62.836502"
        height="222.88754"
        x="39.472427"
@@ -207,7 +207,7 @@
        y="830.25903" />
     <rect
        style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.199999"
-       id="groud-level-main-door"
+       id="ground-level-main-door"
        width="115.46756"
        height="222.88754"
        x="162.67812"

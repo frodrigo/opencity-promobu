@@ -156,18 +156,18 @@ module DirSpritePack
 
   def build_atlas(magick_bin, sprites, atlas_w, atlas_h, output_webp, quality)
     Dir.mktmpdir('dir_sprite_pack') do |tmpdir|
-      atlas_png = File.join(tmpdir, 'atlas.png')
+      atlas_webp = File.join(tmpdir, 'atlas.webp')
       run_cmd(
         magick_bin,
         '-size', "#{atlas_w}x#{atlas_h}",
         'xc:none',
-        atlas_png
+        atlas_webp
       )
 
-      current_canvas = atlas_png
+      current_canvas = atlas_webp
 
       sprites.each_with_index do |sprite, i|
-        composed_png = File.join(tmpdir, "atlas_#{i}.png")
+        composed_webp = File.join(tmpdir, "atlas_#{i}.webp")
         run_cmd(
           magick_bin,
           'composite',
@@ -176,10 +176,10 @@ module DirSpritePack
           "+#{sprite.x}+#{sprite.y}",
           sprite.path,
           current_canvas,
-          composed_png
+          composed_webp
         )
 
-        current_canvas = composed_png
+        current_canvas = composed_webp
       end
 
       run_cmd(

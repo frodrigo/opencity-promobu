@@ -182,40 +182,40 @@ module SvgRectSprite
 
   def build_atlas(magick_bin, source_image, sprites, atlas_w, atlas_h, output_webp, quality)
     Dir.mktmpdir('svg_rect_sprite') do |tmpdir|
-      atlas_png = File.join(tmpdir, 'atlas.png')
+      atlas_webp = File.join(tmpdir, 'atlas.webp')
       run_cmd(
         magick_bin,
         '-size', "#{atlas_w}x#{atlas_h}",
         'xc:none',
-        atlas_png
+        atlas_webp
       )
 
-      current_canvas = atlas_png
+      current_canvas = atlas_webp
 
       sprites.each_with_index do |sprite, i|
-        crop_png = File.join(tmpdir, "crop_#{i}.png")
+        crop_webp = File.join(tmpdir, "crop_#{i}.webp")
         run_cmd(
           magick_bin,
           source_image,
           '-crop',
           "#{sprite.source_w}x#{sprite.source_h}+#{sprite.source_x}+#{sprite.source_y}",
           '+repage',
-          crop_png
+          crop_webp
         )
 
-        composed_png = File.join(tmpdir, "atlas_#{i}.png")
+        composed_webp = File.join(tmpdir, "atlas_#{i}.webp")
         run_cmd(
           magick_bin,
           'composite',
           '-compose', 'Over',
           '-geometry',
           "+#{sprite.atlas_x}+#{sprite.atlas_y}",
-          crop_png,
+          crop_webp,
           current_canvas,
-          composed_png
+          composed_webp
         )
 
-        current_canvas = composed_png
+        current_canvas = composed_webp
       end
 
       run_cmd(
