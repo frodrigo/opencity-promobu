@@ -25,9 +25,9 @@
      inkscape:pageopacity="1"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="1.25224"
-     inkscape:cx="56.299112"
-     inkscape:cy="863.65234"
+     inkscape:zoom="2.349285"
+     inkscape:cx="123.86748"
+     inkscape:cy="255.60969"
      inkscape:window-width="1882"
      inkscape:window-height="1061"
      inkscape:window-x="0"
@@ -175,6 +175,60 @@
        y="313.68832"
        inkscape:transform-center-x="36.148883"
        inkscape:transform-center-y="2.0368011" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200002"
+       id="crown-window"
+       width="69.660675"
+       height="45.584606"
+       x="183.63918"
+       y="268.10367"
+       inkscape:transform-center-x="87.444529"
+       inkscape:transform-center-y="1.0740146" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200002"
+       id="crown-window-top-repeat-x"
+       width="15.601673"
+       height="29.835133"
+       x="204.53969"
+       y="238.26854"
+       inkscape:transform-center-x="19.584666"
+       inkscape:transform-center-y="0.70293552" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200002"
+       id="crown-small-repeat-x"
+       width="24.966223"
+       height="54.523495"
+       x="55.741516"
+       y="257.74948"
+       inkscape:transform-center-x="31.339919"
+       inkscape:transform-center-y="1.2846177" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="crown-circle-1"
+       width="68.38369"
+       height="49.415558"
+       x="184.95926"
+       y="188.85298"
+       inkscape:transform-center-x="85.841537"
+       inkscape:transform-center-y="1.1642597" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="crown-circle-2"
+       width="59.870457"
+       height="41.327991"
+       x="188.79021"
+       y="147.52499"
+       inkscape:transform-center-x="75.154951"
+       inkscape:transform-center-y="0.9737153" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
+       id="crown-circle-3"
+       width="32.202465"
+       height="33.666084"
+       x="202.83704"
+       y="113.85891"
+       inkscape:transform-center-x="40.423519"
+       inkscape:transform-center-y="0.79319259" />
     <rect
        style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
        id="level-top-1-column"
