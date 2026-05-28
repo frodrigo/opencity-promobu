@@ -256,14 +256,16 @@ module Rules
 
 	class Instantiate < Creational
 		attr_accessor :shapeType, :id
+		attr_accessor :shapeOptions
 
-		def initialize( shapeType, id )
+		def initialize( shapeType, id, shapeOptions=nil )
 			self.shapeType = shapeType
 			self.id = id
+			self.shapeOptions = shapeOptions
 		end
 
 		def apply( node, position, rotation, scope )
-			Node.new( node, id, shapeType.new( scope ), position, rotation )
+			Node.new( node, id, shapeType.new( scope, shapeOptions ), position, rotation )
 		end
 	end
 

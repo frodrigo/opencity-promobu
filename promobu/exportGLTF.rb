@@ -305,10 +305,10 @@ module Shapes
 
   class ::Shapes::Shape
 
-    def gltf_map_uvs( base_uvs )
+    def gltf_map_uvs( base_uvs, shape_w=nil, shape_h=nil )
       return base_uvs if texture.nil?
 
-      base_uvs.map { |u, v| texture.map_uv( u, v ) }
+      base_uvs.map { |u, v| texture.map_uv( u, v, shape_w, shape_h ) }
     end
 
     def buildGLTFPrimitives( builder )
@@ -379,15 +379,15 @@ module Shapes
   end
 
   class ::Shapes::Cylinder < Shape3D
-    # Build a true cylinder mesh (elliptical if scope.x != scope.z), aligned on Y.
-    # The cylinder fills the local scope box: x:[0..scope.x], y:[0..scope.y], z:[0..scope.z].
+    # Build a polygonal cylinder/prism mesh aligned on Y.
+    # The side surface is split into +segments+ planar panels (default 12).
     def buildGLTFPrimitives( builder )
       sx = scope.x.to_f
       sy = scope.y.to_f
       sz = scope.z.to_f
       return [] if sx <= 0.0 || sy <= 0.0 || sz <= 0.0
 
-      segments = 32
+      segments = [ (self.segments || 12).to_i, 3 ].max
       cx = sx / 2.0
       cz = sz / 2.0
       rx = sx / 2.0
@@ -398,93 +398,68 @@ module Shapes
       normals   = []
       indices   = []
 
-      # Side strip (smooth normals, seam duplicated at i=segments).
-      (0..segments).each do |i|
+      ring = (0...segments).map do |i|
         t = (2.0 * Math::PI * i) / segments
-        ct = Math.cos( t )
-        st = Math.sin( t )
-        x = cx + rx * ct
-        z = cz + rz * st
-        # Approximate outward normal for an ellipse from the implicit form.
-        nx = ct / [rx, 1.0e-9].max
-        nz = st / [rz, 1.0e-9].max
-        nlen = Math.sqrt( nx * nx + nz * nz )
-        nx /= nlen
-        nz /= nlen
-        u = i.to_f / segments
-
-        positions << [x, 0.0, z]
-        positions << [x, sy,  z]
-        uvs << [u, 1.0]
-        uvs << [u, 0.0]
-        normals << [nx, 0.0, nz]
-        normals << [nx, 0.0, nz]
+        [ cx + rx * Math.cos(t), cz + rz * Math.sin(t), t ]
       end
 
       (0...segments).each do |i|
-        b0 = 2 * i
-        t0 = b0 + 1
-        b1 = 2 * (i + 1)
-        t1 = b1 + 1
-        indices += [b0, t0, t1,  b0, t1, b1]
+        x0, z0, a0 = ring[i]
+        x1, z1, a1 = ring[(i + 1) % segments]
+        base = positions.size
+        positions += [[x0, 0.0, z0], [x1, 0.0, z1], [x1, sy, z1], [x0, sy, z0]]
+        edge_len = Math.sqrt( (x1 - x0) * (x1 - x0) + (z1 - z0) * (z1 - z0) )
+        uvs += gltf_map_uvs([[0, 1], [1, 1], [1, 0], [0, 0]], edge_len, sy)
+        nx = Math.cos( (a0 + a1) / 2.0 )
+        nz = Math.sin( (a0 + a1) / 2.0 )
+        normals += [[nx, 0.0, nz]] * 4
+        indices += GLTF_QUAD_IDX.map { |j| base + j }
       end
 
-      # Top cap (+Y)
       top_center = positions.size
       positions << [cx, sy, cz]
       uvs << [0.5, 0.5]
       normals << [0.0, 1.0, 0.0]
-      top_ring = []
-      (0...segments).each do |i|
-        t = (2.0 * Math::PI * i) / segments
-        x = cx + rx * Math.cos( t )
-        z = cz + rz * Math.sin( t )
-        top_ring << positions.size
-        positions << [x, sy, z]
-        uvs << [x / sx, 1.0 - (z / sz)]
-        normals << [0.0, 1.0, 0.0]
+      top_ring = ring.map do |x, z, _a|
+        positions.size.tap do
+          positions << [x, sy, z]
+          uvs << [0.5 + (x - cx) / sx, 0.5 - (z - cz) / sz]
+          normals << [0.0, 1.0, 0.0]
+        end
       end
       (0...segments).each do |i|
-        i0 = top_ring[i]
-        i1 = top_ring[(i + 1) % segments]
-        indices += [top_center, i1, i0]
+        indices += [top_center, top_ring[(i + 1) % segments], top_ring[i]]
       end
 
-      # Bottom cap (-Y)
       bottom_center = positions.size
       positions << [cx, 0.0, cz]
       uvs << [0.5, 0.5]
       normals << [0.0, -1.0, 0.0]
-      bottom_ring = []
-      (0...segments).each do |i|
-        t = (2.0 * Math::PI * i) / segments
-        x = cx + rx * Math.cos( t )
-        z = cz + rz * Math.sin( t )
-        bottom_ring << positions.size
-        positions << [x, 0.0, z]
-        uvs << [x / sx, 1.0 - (z / sz)]
-        normals << [0.0, -1.0, 0.0]
+      bottom_ring = ring.map do |x, z, _a|
+        positions.size.tap do
+          positions << [x, 0.0, z]
+          uvs << [0.5 + (x - cx) / sx, 0.5 - (z - cz) / sz]
+          normals << [0.0, -1.0, 0.0]
+        end
       end
       (0...segments).each do |i|
-        i0 = bottom_ring[i]
-        i1 = bottom_ring[(i + 1) % segments]
-        indices += [bottom_center, i0, i1]
+        indices += [bottom_center, bottom_ring[i], bottom_ring[(i + 1) % segments]]
       end
 
       mat = builder.material_for( texture )
-      [ builder.make_primitive( positions, gltf_map_uvs( uvs ), normals, indices, mat ) ]
+      [ builder.make_primitive( positions, uvs, normals, indices, mat ) ]
     end
   end
 
   class ::Shapes::CylinderSide < Shape3D
-    # Build only the lateral cylinder surface (no top/bottom caps), aligned on Y.
+    # Build only the lateral polygonal cylinder surface (no top/bottom caps).
     def buildGLTFPrimitives( builder )
       sx = scope.x.to_f
       sy = scope.y.to_f
       sz = scope.z.to_f
       return [] if sx <= 0.0 || sy <= 0.0 || sz <= 0.0
 
-      segments = 32
+      segments = [ (self.segments || 12).to_i, 3 ].max
       cx = sx / 2.0
       cz = sz / 2.0
       rx = sx / 2.0
@@ -495,37 +470,26 @@ module Shapes
       normals   = []
       indices   = []
 
-      (0..segments).each do |i|
+      ring = (0...segments).map do |i|
         t = (2.0 * Math::PI * i) / segments
-        ct = Math.cos( t )
-        st = Math.sin( t )
-        x = cx + rx * ct
-        z = cz + rz * st
-        nx = ct / [rx, 1.0e-9].max
-        nz = st / [rz, 1.0e-9].max
-        nlen = Math.sqrt( nx * nx + nz * nz )
-        nx /= nlen
-        nz /= nlen
-        u = i.to_f / segments
-
-        positions << [x, 0.0, z]
-        positions << [x, sy,  z]
-        uvs << [u, 1.0]
-        uvs << [u, 0.0]
-        normals << [nx, 0.0, nz]
-        normals << [nx, 0.0, nz]
+        [ cx + rx * Math.cos(t), cz + rz * Math.sin(t), t ]
       end
 
       (0...segments).each do |i|
-        b0 = 2 * i
-        t0 = b0 + 1
-        b1 = 2 * (i + 1)
-        t1 = b1 + 1
-        indices += [b0, t0, t1,  b0, t1, b1]
+        x0, z0, a0 = ring[i]
+        x1, z1, a1 = ring[(i + 1) % segments]
+        base = positions.size
+        positions += [[x0, 0.0, z0], [x1, 0.0, z1], [x1, sy, z1], [x0, sy, z0]]
+        edge_len = Math.sqrt( (x1 - x0) * (x1 - x0) + (z1 - z0) * (z1 - z0) )
+        uvs += gltf_map_uvs([[0, 1], [1, 1], [1, 0], [0, 0]], edge_len, sy)
+        nx = Math.cos( (a0 + a1) / 2.0 )
+        nz = Math.sin( (a0 + a1) / 2.0 )
+        normals += [[nx, 0.0, nz]] * 4
+        indices += GLTF_QUAD_IDX.map { |j| base + j }
       end
 
       mat = builder.material_for( texture )
-      [ builder.make_primitive( positions, gltf_map_uvs( uvs ), normals, indices, mat ) ]
+      [ builder.make_primitive( positions, uvs, normals, indices, mat ) ]
     end
   end
 

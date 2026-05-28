@@ -274,7 +274,9 @@ module ProcedureBuildingGenerator
 		end
 
 		# Map [u,v] in local [0..1] space to atlas space when sprite metadata exists.
-		def map_uv( u, v )
+		# If repeat_x is enabled, the U coordinate is tiled according to the face
+		# width relative to the sprite aspect ratio while V remains fit to height.
+		def map_uv( u, v, shape_w=nil, shape_h=nil )
 			return [u, v] if self.sprite_frame.nil?
 
 			ax = self.sprite_frame[:x].to_f
@@ -288,6 +290,14 @@ module ProcedureBuildingGenerator
 			u1 = (ax + aw) / atlas_w
 			v0 = ay / atlas_h
 			v1 = (ay + ah) / atlas_h
+
+			if self.sprite_frame[:repeat_x] && shape_w && shape_h && shape_h.to_f > 0.0
+				tile_w = shape_h.to_f * (aw / ah)
+				if tile_w > 0.0
+					repeats = shape_w.to_f / tile_w
+					u = (u * repeats) % 1.0
+				end
+			end
 
 			[ u0 + (u1 - u0) * u, v0 + (v1 - v0) * v ]
 		end

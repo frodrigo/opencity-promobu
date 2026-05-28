@@ -4,9 +4,11 @@ module Shapes
 	class ::Shapes::Shape
 		attr_accessor :scope
 		attr_accessor :texture
+		attr_accessor :segments
 
-		def initialize( scope )
+		def initialize( scope, options=nil )
 			self.scope = scope
+			self.segments = options[:segments].to_i if options.is_a?(Hash) && options[:segments]
 		end
 
 		def component( splitType )
@@ -245,10 +247,10 @@ module Shapes
 		# Keep side-face components as real cylinders but without top/bottom caps.
 		def component( splitType )
 			if splitType == SideFaces
-				[ [ V3._0, V3._0, CylinderSide.new(V3[scope.x,scope.y,scope.z]) ] ]
+				[ [ V3._0, V3._0, CylinderSide.new(V3[scope.x,scope.y,scope.z], segments: segments) ] ]
 			elsif splitType == FrontFace || splitType == BackFace || splitType == LeftFace ||
 				splitType == RightFace
-				[ [ V3._0, V3._0, Cylinder.new(V3[scope.x,scope.y,scope.z]) ] ]
+				[ [ V3._0, V3._0, Cylinder.new(V3[scope.x,scope.y,scope.z], segments: segments) ] ]
 			else
 				proxy = Box.new( V3[scope.x,scope.y,scope.z] )
 				proxy.component( splitType )
@@ -261,7 +263,7 @@ module Shapes
 				sumAbsPartSize = 0
 				absPartSizes.each{ |absPartSize|
 					unless absPartSize.is_a?(Snap)
-						returns << [ V3[sumAbsPartSize,0,0], V3._0, Cylinder.new(V3[absPartSize,scope.y,scope.z]) ]
+						returns << [ V3[sumAbsPartSize,0,0], V3._0, Cylinder.new(V3[absPartSize,scope.y,scope.z], segments: segments) ]
 						sumAbsPartSize += absPartSize
 					else
 						returns << [ V3[sumAbsPartSize,0,0], V3[0,-90,0], SnapPlaneRectangle.new(absPartSize, V2[scope.z*1.1,scope.y*1.1]) ]
@@ -271,7 +273,7 @@ module Shapes
 				sumAbsPartSize = 0
 				absPartSizes.each{ |absPartSize|
 					unless absPartSize.is_a?(Snap)
-						returns << [ V3[0,sumAbsPartSize,0], V3._0, Cylinder.new(V3[scope.x,absPartSize,scope.z]) ]
+						returns << [ V3[0,sumAbsPartSize,0], V3._0, Cylinder.new(V3[scope.x,absPartSize,scope.z], segments: segments) ]
 						sumAbsPartSize += absPartSize
 					else
 						returns << [ V3[0,sumAbsPartSize,0], V3[-90,0,0], SnapPlaneRectangle.new(absPartSize, V2[scope.x*1.1,scope.z*1.1]) ]
@@ -281,7 +283,7 @@ module Shapes
 				sumAbsPartSize = 0
 				absPartSizes.each{ |absPartSize|
 					unless absPartSize.is_a?(Snap)
-						returns << [ V3[0,0,sumAbsPartSize], V3._0, Cylinder.new(V3[scope.x,scope.y,absPartSize]) ]
+						returns << [ V3[0,0,sumAbsPartSize], V3._0, Cylinder.new(V3[scope.x,scope.y,absPartSize], segments: segments) ]
 						sumAbsPartSize += absPartSize
 					else
 						returns << [ V3[0,0,sumAbsPartSize], V3._0, SnapPlaneRectangle.new(absPartSize, V2[scope.x*1.1,scope.y*1.1]) ]
@@ -294,7 +296,39 @@ module Shapes
 
 	class ::Shapes::CylinderSide < Shape3D
 		def subDivise( axis, absPartSizes )
-			Cylinder.new( scope ).subDivise( axis, absPartSizes )
+			returns = []
+			if axis == XAxis
+				sumAbsPartSize = 0
+				absPartSizes.each{ |absPartSize|
+					unless absPartSize.is_a?(Snap)
+						returns << [ V3[sumAbsPartSize,0,0], V3._0, CylinderSide.new(V3[absPartSize,scope.y,scope.z], segments: segments) ]
+						sumAbsPartSize += absPartSize
+					else
+						returns << [ V3[sumAbsPartSize,0,0], V3[0,-90,0], SnapPlaneRectangle.new(absPartSize, V2[scope.z*1.1,scope.y*1.1]) ]
+					end
+				}
+			elsif axis == YAxis
+				sumAbsPartSize = 0
+				absPartSizes.each{ |absPartSize|
+					unless absPartSize.is_a?(Snap)
+						returns << [ V3[0,sumAbsPartSize,0], V3._0, CylinderSide.new(V3[scope.x,absPartSize,scope.z], segments: segments) ]
+						sumAbsPartSize += absPartSize
+					else
+						returns << [ V3[0,sumAbsPartSize,0], V3[-90,0,0], SnapPlaneRectangle.new(absPartSize, V2[scope.x*1.1,scope.z*1.1]) ]
+					end
+				}
+			elsif axis == ZAxis
+				sumAbsPartSize = 0
+				absPartSizes.each{ |absPartSize|
+					unless absPartSize.is_a?(Snap)
+						returns << [ V3[0,0,sumAbsPartSize], V3._0, CylinderSide.new(V3[scope.x,scope.y,absPartSize], segments: segments) ]
+						sumAbsPartSize += absPartSize
+					else
+						returns << [ V3[0,0,sumAbsPartSize], V3._0, SnapPlaneRectangle.new(absPartSize, V2[scope.x*1.1,scope.y*1.1]) ]
+					end
+				}
+			end
+			returns
 		end
 	end
 
