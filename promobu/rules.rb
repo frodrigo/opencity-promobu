@@ -122,6 +122,12 @@ module Rules
 	end
 
 	class ::Rules::SplitComponant
+		private
+
+		def register_snap_plane( node, subShapeArray )
+			(abs_position, abs_rotation) = node.toAbs( subShapeArray[0], subShapeArray[1] )
+			SnapRegistery.instance << SnapPlane.new( subShapeArray[2].snap, abs_position, abs_rotation )
+		end
 	end
 
 	class SplitElement < SplitComponant
