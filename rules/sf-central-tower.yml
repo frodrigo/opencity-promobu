@@ -33,8 +33,8 @@ rules:
           - { abs: 5, rule: capitalLevel }
           - { abs: 3, rule: transitionLevel }
           - { abs: 1, rule: transitionCornice }
-          - { abs: 7, rule: atticLevel }
-          - { abs: 10, rule: cupola }
+          - { abs: 5, rule: atticLevel }
+          - { abs: 13, rule: cupola }
 
   # ── Ground Level (rusticated base, arched storefronts) ───────────────────
 
@@ -262,8 +262,8 @@ rules:
 
   - name: cupola
     actions:
-      - scope: { dx: -4, dz: -4 }
-      - translation: { x: 2, y: -1, z: 2 }
+      - scope: { dx: -2, dz: -2 }
+      - translation: { x: 1, y: -0.5, z: 1 }
       - i: cupolaCorner
       - i: cupolaMain
 
@@ -277,17 +277,18 @@ rules:
   - name: cupolaCornerStrip
     actions:
       - split_z:
-          - { abs: 3, rule: cupolaCornerSmall }
+          - { abs: 3, rule: cupolaSmall }
           - { rel: 1, rule: delete }
-          - { abs: 3, rule: cupolaCornerSmall }
+          - { abs: 3, rule: cupolaSmall }
 
-  - name: cupolaCornerSmall
+  - name: cupolaSmall
     actions:
       - split_y:
-          - { abs: 3, rule: cupolaCornerSmallBottom }
+          - { abs: 3, rule: cupolaSmallBottom }
+          - { abs: 1, rule: cupolaSmallTop }
           - { rel: 1, rule: delete }
 
-  - name: cupolaCornerSmallBottom
+  - name: cupolaSmallBottom
     actions:
       - instantiate:
           - Cylinder
@@ -295,11 +296,25 @@ rules:
           - actions:
               - component: { faces: side, rules: [crown-small] }
 
+  - name: cupolaSmallTop
+    actions:
+      - instantiate:
+          - Cupola
+          - { segments: 8 }
+          - actions:
+              - component: { faces: side, rules: [crown-small-circle] }
+
   - name: cupolaMain
     actions:
       - split_y:
           - { abs: 3, rule: cylinderMain }
           - { rel: 1, rule: cupolaMainTop }
+          - { abs: 3, rule: cupolaMainSmallTop }
+
+  - name: cupolaMainSmallTop
+    actions:
+      - scope: { x: 3, z: 4 }
+      - i : cupolaSmall
 
   - name: cylinderMain
     actions:
@@ -319,9 +334,17 @@ rules:
     actions:
       - instantiate:
           - Cupola
-          - { segments: 16, levels: 3 }
+          - { segments: 16 }
           - actions:
-             - component: { faces: side, rules: [crown-circle-1] }
+             - component: { faces: side, rules: [cupolaMainTopParts] }
+
+  - name: cupolaMainTopParts
+    actions:
+      - split_y:
+          - { rel: 4, rule: crown-circle-1 }
+          - { rel: 3, rule: crown-circle-2 }
+          - { rel: 2, rule: crown-circle-3 }
+          - { rel: 0.2, rule: delete }
 
   # ── Belt Courses / Cornices (scope-extruded boxes) ───────────────────────
 
@@ -464,3 +487,7 @@ rules:
   - name: crown-circle-3
     actions:
       - texture: crown-circle-3
+
+  - name: crown-small-circle
+    actions:
+      - texture: crown-small-circle

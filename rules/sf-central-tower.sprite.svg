@@ -195,13 +195,22 @@
        inkscape:transform-center-y="0.70293552" />
     <rect
        style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200002"
-       id="crown-small-repeat-x"
+       id="crown-small"
        width="24.966223"
        height="54.523495"
        x="55.741516"
        y="257.74948"
        inkscape:transform-center-x="31.339919"
        inkscape:transform-center-y="1.2846177" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200002"
+       id="crown-small-circle"
+       width="16.027334"
+       height="33.666084"
+       x="61.275116"
+       y="224.08339"
+       inkscape:transform-center-x="20.118993"
+       inkscape:transform-center-y="0.79319667" />
     <rect
        style="fill:#ffffff;fill-opacity:0.525449;stroke:none;stroke-width:0.200001"
        id="crown-circle-1"
