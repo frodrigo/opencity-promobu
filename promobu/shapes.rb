@@ -5,12 +5,16 @@ module Shapes
 		attr_accessor :scope
 		attr_accessor :texture
 		attr_accessor :segments
-		attr_accessor :levels
+		attr_accessor :profile_start
+		attr_accessor :profile_end
 
 		def initialize( scope, options=nil )
 			self.scope = scope
 			self.segments = options[:segments].to_i if options.is_a?(Hash) && options[:segments]
-			self.levels = options[:levels].to_i if options.is_a?(Hash) && options[:levels]
+			if options.is_a?(Hash)
+				self.profile_start = options[:profile_start].to_f if options.key?(:profile_start)
+				self.profile_end = options[:profile_end].to_f if options.key?(:profile_end)
+			end
 		end
 
 		def component( splitType )
@@ -335,12 +339,25 @@ module Shapes
 	end
 
 	class ::Shapes::Cupola < Shape3D
+		def cupola_profile_start
+			profile_start.nil? ? 0.0 : profile_start
+		end
+
+		def cupola_profile_end
+			profile_end.nil? ? 1.0 : profile_end
+		end
+
+		def cupola_scale( t )
+			t = [[t, 0.0].max, 1.0].min
+			Math.sqrt( [ 0.0, 1.0 - t*t ].max )
+		end
+
 		def component( splitType )
 			if splitType == SideFaces
-				[ [ V3._0, V3._0, self.class.new(V3[scope.x,scope.y,scope.z], segments: segments, levels: levels) ] ]
+				[ [ V3._0, V3._0, self.class.new(V3[scope.x,scope.y,scope.z], segments: segments, profile_start: cupola_profile_start, profile_end: cupola_profile_end) ] ]
 			elsif splitType == FrontFace || splitType == BackFace || splitType == LeftFace ||
 				splitType == RightFace
-				[ [ V3._0, V3._0, self.class.new(V3[scope.x,scope.y,scope.z], segments: segments, levels: levels) ] ]
+				[ [ V3._0, V3._0, self.class.new(V3[scope.x,scope.y,scope.z], segments: segments, profile_start: cupola_profile_start, profile_end: cupola_profile_end) ] ]
 			else
 				proxy = Box.new( V3[scope.x,scope.y,scope.z] )
 				proxy.component( splitType )
@@ -353,7 +370,7 @@ module Shapes
 				sumAbsPartSize = 0
 				absPartSizes.each{ |absPartSize|
 					unless absPartSize.is_a?(Snap)
-						returns << [ V3[sumAbsPartSize,0,0], V3._0, self.class.new(V3[absPartSize,scope.y,scope.z], segments: segments, levels: levels) ]
+						returns << [ V3[sumAbsPartSize,0,0], V3._0, self.class.new(V3[absPartSize,scope.y,scope.z], segments: segments) ]
 						sumAbsPartSize += absPartSize
 					else
 						returns << [ V3[sumAbsPartSize,0,0], V3[0,-90,0], SnapPlaneRectangle.new(absPartSize, V2[scope.z*1.1,scope.y*1.1]) ]
@@ -361,9 +378,26 @@ module Shapes
 				}
 			elsif axis == YAxis
 				sumAbsPartSize = 0
+				base_t0 = cupola_profile_start
+				base_t1 = cupola_profile_end
+				range_t = base_t1 - base_t0
+				total_h = scope.y.to_f
 				absPartSizes.each{ |absPartSize|
 					unless absPartSize.is_a?(Snap)
-						returns << [ V3[0,sumAbsPartSize,0], V3._0, self.class.new(V3[scope.x,absPartSize,scope.z], segments: segments, levels: levels) ]
+						part_h = absPartSize.to_f
+						y0 = sumAbsPartSize.to_f
+						y1 = y0 + part_h
+						u0 = total_h > 0.0 ? y0 / total_h : 0.0
+						u1 = total_h > 0.0 ? y1 / total_h : 1.0
+						t0 = base_t0 + range_t * u0
+						t1 = base_t0 + range_t * u1
+						shape = self.class.new(
+							V3[scope.x,part_h,scope.z],
+							segments: segments,
+							profile_start: t0,
+							profile_end: t1
+						)
+						returns << [ V3[0,sumAbsPartSize,0], V3._0, shape ]
 						sumAbsPartSize += absPartSize
 					else
 						returns << [ V3[0,sumAbsPartSize,0], V3[-90,0,0], SnapPlaneRectangle.new(absPartSize, V2[scope.x*1.1,scope.z*1.1]) ]
@@ -373,7 +407,7 @@ module Shapes
 				sumAbsPartSize = 0
 				absPartSizes.each{ |absPartSize|
 					unless absPartSize.is_a?(Snap)
-						returns << [ V3[0,0,sumAbsPartSize], V3._0, self.class.new(V3[scope.x,scope.y,absPartSize], segments: segments, levels: levels) ]
+						returns << [ V3[0,0,sumAbsPartSize], V3._0, self.class.new(V3[scope.x,scope.y,absPartSize], segments: segments, profile_start: cupola_profile_start, profile_end: cupola_profile_end) ]
 						sumAbsPartSize += absPartSize
 					else
 						returns << [ V3[0,0,sumAbsPartSize], V3._0, SnapPlaneRectangle.new(absPartSize, V2[scope.x*1.1,scope.y*1.1]) ]

@@ -496,15 +496,24 @@ module Shapes
   class ::Shapes::Cupola < Shape3D
     # Build a pointed cupola mesh aligned on Y.
     # The base is the same footprint as a cylinder, and the profile tapers to
-    # a point at the top. The height is split into +levels+ stacked bands.
+    # a point at the top.
     def buildGLTFPrimitives( builder )
       emit_cupola_primitives( builder, bottom_cap: true )
     end
 
     private
 
-    def cupola_levels
-      [ (self.levels || 1).to_i, 1 ].max
+    def cupola_profile_start
+      profile_start.nil? ? 0.0 : profile_start.to_f
+    end
+
+    def cupola_profile_end
+      profile_end.nil? ? 1.0 : profile_end.to_f
+    end
+
+    def cupola_scale( t )
+      t = [[t, 0.0].max, 1.0].min
+      Math.sqrt( [0.0, 1.0 - t * t].max )
     end
 
     def emit_cupola_primitives( builder, bottom_cap: )
@@ -514,7 +523,7 @@ module Shapes
       return [] if sx <= 0.0 || sy <= 0.0 || sz <= 0.0
 
       segments = [ (self.segments || 12).to_i, 3 ].max
-      levels   = cupola_levels
+      levels   = 8
       level_h  = sy / levels.to_f
       cx = sx / 2.0
       cz = sz / 2.0
@@ -531,27 +540,37 @@ module Shapes
         [ Math.cos(t), Math.sin(t), t ]
       end
 
+      t0 = cupola_profile_start
+      t1 = cupola_profile_end
+      tr = t1 - t0
+
       rings = (0..levels).map do |level|
-        t = level / levels.to_f
-        scale = Math.sqrt(1.0 - t * t)
+        u = level / levels.to_f
+        t = t0 + tr * u
+        scale = cupola_scale( t )
         y = level * level_h
-        ring_points.map { |cos_t, sin_t, a| [ cx + rx * scale * cos_t, y, cz + rz * scale * sin_t, a, scale ] }
+        ring_points.map { |cos_t, sin_t, a| [ cx + rx * scale * cos_t, y, cz + rz * scale * sin_t, a, scale, t ] }
       end
 
       (0...levels).each do |level|
         lower = rings[level]
         upper = rings[level + 1]
         (0...segments).each do |i|
-          x0, y0, z0, a0, _s0 = lower[i]
-          x1, y1, z1, a1, s1  = upper[i]
-          x2, y2, z2, _a2, _s2 = upper[(i + 1) % segments]
-          x3, y3, z3, _a3, _s3 = lower[(i + 1) % segments]
+          x0, y0, z0, a0, _s0, t_lower = lower[i]
+          x1, y1, z1, a1, s1, t_upper  = upper[i]
+          x2, y2, z2, _a2, _s2, _t2 = upper[(i + 1) % segments]
+          x3, y3, z3, _a3, _s3, _t3 = lower[(i + 1) % segments]
+          # Keep texture mapping local to the current split_y cupola section.
+          u0 = tr.abs > 1e-6 ? ( t_lower - t0 ) / tr : 0.0
+          u1 = tr.abs > 1e-6 ? ( t_upper - t0 ) / tr : 1.0
+          v0 = 1.0 - u0
+          v1 = 1.0 - u1
 
           if s1 > 0.0001
             base = positions.size
             positions += [[x0, y0, z0], [x3, y3, z3], [x2, y2, z2], [x1, y1, z1]]
             edge_len = Math.sqrt( (x3 - x0) * (x3 - x0) + (z3 - z0) * (z3 - z0) )
-            uvs += gltf_map_uvs([[0, 1], [1, 1], [1, 0], [0, 0]], edge_len, level_h)
+            uvs += gltf_map_uvs([[0, v0], [1, v0], [1, v1], [0, v1]], edge_len, sy)
             nx = Math.cos( (a0 + a1) / 2.0 )
             nz = Math.sin( (a0 + a1) / 2.0 )
             normals += [[nx, 0.0, nz]] * 4
@@ -561,7 +580,7 @@ module Shapes
             base = positions.size
             positions += [[x0, y0, z0], [x3, y3, z3], apex]
             edge_len = Math.sqrt( (x3 - x0) * (x3 - x0) + (z3 - z0) * (z3 - z0) )
-            uvs += gltf_map_uvs([[0, 1], [1, 1], [0.5, 0]], edge_len, level_h)
+            uvs += gltf_map_uvs([[0, v0], [1, v0], [0.5, v1]], edge_len, sy)
             nx = Math.cos( (a0 + a1) / 2.0 )
             nz = Math.sin( (a0 + a1) / 2.0 )
             normals += [[nx, 0.0, nz], [nx, 0.0, nz], [0.0, 1.0, 0.0]]
