@@ -1,41 +1,25 @@
-Description:
-	Procedure Modeling of Building, part of OpenCity project, another 3D city simulation game.
+Procedure Modeling of Building
 
-This is partial ruby implementation of "Procedural modeling of buildings" by P. Mueller.
-RTFSC
+This repository contains a partial Ruby implementation of "Procedural Modeling of Buildings" by P. Mueller.
+Reference paper:
+https://peterwonka.net/Publications/pdfs/2006.SG.Mueller.ProceduralModelingOfBuildings.final.pdf
 
-Look at for withpaper:
-http://www.vision.ee.ethz.ch/~pmueller/documents/mueller.procedural_modeling_of_buildings.SG2006.web-version.pdf
 
-Some details at:
-http://www.opencity.info/wiki/index.php/BuildingProceduralGenerationOverview
-http://www.opencity.info/wiki/index.php/BuildingProceduralGeneration
+## Build Sprite Atlases
 
-Last modified:
-	$Id$
-
-Run
-```sh
-ruby rules.rb rules/canary.yml 5 3 4
-ruby rules.rb rules/ttd.yml 10 30 10
-ruby rules.rb rules/nyc1920.yml 20 14 8
-ruby rules.rb rules/sf-central-tower.yml 10 10 10
-```
-
-Build sprite atlas from a directory of sprite images
+Build atlas from an image directory:
 ```sh
 ruby promobu/dir_sprite_pack.rb nyc1920 --out-dir rules --output-base nyc1920-sprites
 ruby promobu/dir_sprite_pack.rb ttd --out-dir rules --output-base ttd-sprites
 ruby promobu/dir_sprite_pack.rb canary --out-dir rules --output-base canary-sprites
 ```
 
-Build sprite atlas from SVG rect markers
+Build atlas from SVG rectangle markers:
 ```sh
 ruby ../promobu/svg_rect_sprite.rb sf-central-tower.sprite.svg --out-dir . --output-base sf-central-tower-sprites
 ```
-Requires ImageMagick (`magick` or `convert`) in `PATH`.
 
-Use sprite atlas textures in rules (single image + JSON sprite frames)
+Use atlas textures in rule YAML:
 ```yml
 textures:
 	window_atlas:
@@ -45,5 +29,52 @@ textures:
 		sprite: level-1-window
 ```
 
-You can also keep `type: adapted` or `type: tiled` and add `sprites` + `sprite` to use atlas UVs.
-Optional: set `atlas_w` and `atlas_h` to force atlas image dimensions.
+Notes:
+- You can also use `type: adapted` or `type: tiled` with `sprites` + `sprite`.
+- Optional `atlas_w` and `atlas_h` can force atlas image dimensions.
+
+
+## Generate Models
+
+Command format:
+```sh
+ruby rules.rb <rules-yaml> <width> <height> <depth>
+```
+
+Arguments:
+- `<rules-yaml>`: rule file under `rules/` (for example `rules/nyc1920.yml`)
+- `<width> <height> <depth>`: root box dimensions for the procedural generation
+
+Examples:
+```sh
+ruby rules.rb rules/canary.yml 5 3 4
+ruby rules.rb rules/ttd.yml 10 30 10
+ruby rules.rb rules/nyc1920.yml 20 14 8
+ruby rules.rb rules/sf-central-tower.yml 10 10 10
+```
+
+Output:
+- The current generator exports a glTF binary model to `out.glb`.
+
+
+## Viewer: Build And Run
+
+The viewer is in `viewer/` and uses Three.js.
+
+Install dependencies:
+```sh
+cd viewer
+npm install
+```
+
+Run the model preview launcher:
+```sh
+npm run view -- ../out.glb
+```
+
+Other viewer commands:
+```sh
+npm run dev
+npm run build
+npm run serve
+```

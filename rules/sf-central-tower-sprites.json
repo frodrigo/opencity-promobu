@@ -1,0 +1,205 @@
+{
+  "ground-level-columns": {
+    "x": 282,
+    "y": 911,
+    "w": 38,
+    "h": 223,
+    "repeat_x": false
+  },
+  "level-1-base": {
+    "x": 282,
+    "y": 894,
+    "w": 38,
+    "h": 16,
+    "repeat_x": true
+  },
+  "level-1-column": {
+    "x": 282,
+    "y": 864,
+    "w": 35,
+    "h": 31,
+    "repeat_x": false
+  },
+  "level-1-balustrade": {
+    "x": 251,
+    "y": 864,
+    "w": 21,
+    "h": 31,
+    "repeat_x": true
+  },
+  "ground-level-wall": {
+    "x": 12,
+    "y": 911,
+    "w": 28,
+    "h": 223,
+    "repeat_x": true
+  },
+  "ground-level-side-door": {
+    "x": 39,
+    "y": 911,
+    "w": 64,
+    "h": 223,
+    "repeat_x": false
+  },
+  "level-1-window": {
+    "x": 37,
+    "y": 830,
+    "w": 63,
+    "h": 64,
+    "repeat_x": false
+  },
+  "level-2-3-window": {
+    "x": 27,
+    "y": 687,
+    "w": 82,
+    "h": 138,
+    "repeat_x": false
+  },
+  "level-intermediate-window": {
+    "x": 27,
+    "y": 624,
+    "w": 82,
+    "h": 64,
+    "repeat_x": false
+  },
+  "level-top-2-4-base": {
+    "x": 27,
+    "y": 597,
+    "w": 82,
+    "h": 28,
+    "repeat_x": true
+  },
+  "level-top-3-4-side-window": {
+    "x": 17,
+    "y": 476,
+    "w": 90,
+    "h": 122,
+    "repeat_x": false
+  },
+  "level-top-2-colomn": {
+    "x": 16,
+    "y": 422,
+    "w": 28,
+    "h": 55,
+    "repeat_x": false
+  },
+  "level-top-2-window": {
+    "x": 43,
+    "y": 422,
+    "w": 40,
+    "h": 55,
+    "repeat_x": false
+  },
+  "base-level-top-1-bottom": {
+    "x": 43,
+    "y": 411,
+    "w": 49,
+    "h": 12,
+    "repeat_x": true
+  },
+  "base-level-top-1": {
+    "x": 43,
+    "y": 401,
+    "w": 49,
+    "h": 11,
+    "repeat_x": true
+  },
+  "level-top-1-side-window": {
+    "x": 16,
+    "y": 313,
+    "w": 90,
+    "h": 88,
+    "repeat_x": false
+  },
+  "level-top-1-window": {
+    "x": 183,
+    "y": 313,
+    "w": 30,
+    "h": 88,
+    "repeat_x": false
+  },
+  "crown-window": {
+    "x": 183,
+    "y": 268,
+    "w": 71,
+    "h": 46,
+    "repeat_x": false
+  },
+  "crown-window-top": {
+    "x": 204,
+    "y": 238,
+    "w": 17,
+    "h": 31,
+    "repeat_x": true
+  },
+  "crown-small": {
+    "x": 55,
+    "y": 257,
+    "w": 26,
+    "h": 56,
+    "repeat_x": false
+  },
+  "crown-small-circle": {
+    "x": 61,
+    "y": 224,
+    "w": 17,
+    "h": 34,
+    "repeat_x": false
+  },
+  "crown-circle-1": {
+    "x": 184,
+    "y": 188,
+    "w": 70,
+    "h": 51,
+    "repeat_x": false
+  },
+  "crown-circle-2": {
+    "x": 188,
+    "y": 147,
+    "w": 61,
+    "h": 42,
+    "repeat_x": false
+  },
+  "crown-circle-3": {
+    "x": 202,
+    "y": 113,
+    "w": 34,
+    "h": 35,
+    "repeat_x": false
+  },
+  "level-top-1-column": {
+    "x": 212,
+    "y": 313,
+    "w": 14,
+    "h": 88,
+    "repeat_x": false
+  },
+  "level-top-3-4-window": {
+    "x": 187,
+    "y": 476,
+    "w": 63,
+    "h": 122,
+    "repeat_x": false
+  },
+  "level-top-2-4-column": {
+    "x": 172,
+    "y": 476,
+    "w": 16,
+    "h": 122,
+    "repeat_x": false
+  },
+  "level-1-wall": {
+    "x": 99,
+    "y": 830,
+    "w": 21,
+    "h": 64,
+    "repeat_x": true
+  },
+  "ground-level-main-door": {
+    "x": 162,
+    "y": 911,
+    "w": 117,
+    "h": 223,
+    "repeat_x": false
+  }
+}

@@ -20,10 +20,7 @@ require_relative 'promobu/rules_loader'
 yaml_path = ARGV[0]
 w, h, d = ARGV[1..3].map(&:to_f)
 
-	rulesSet << Rule.new( "root", nil, [Component.new(SideFaces,["d"])] )
-	rulesSet << Rule.new( "d", nil, [Split.new(XAxis,SplitElement.new([[AbsoluteSize.new(0.25),"e"],[RelativeSize.new(1),"f"]]))] )
-	rulesSet
-end
+rulesSet = RulesLoader.load( yaml_path )
 
 def test2
 	wallTexture = BindTexture.new(TiledTexture.new("canary/wall.png", 0.2, 0.5))
@@ -326,8 +323,8 @@ def testNYC1920
 end
 
 
-root = Node.new( nil, "root", Box.new(V3[5,3,4]), V3._0, V3._0 )
-testCanary.apply( [root] )
+root = Node.new( nil, "root", Box.new(V3[w,h,d]), V3._0, V3._0 )
+rulesSet.apply( [root] )
 
 #root = Node.new( nil, "root", Box.new(V3[10,30,10]), V3._0, V3._0 )
 #testTTD.apply( [root] )

@@ -1,0 +1,149 @@
+{
+  "balcon-column": {
+    "x": 0,
+    "y": 0,
+    "w": 16,
+    "h": 113,
+    "repeat_x": false
+  },
+  "balcon-corner": {
+    "x": 18,
+    "y": 0,
+    "w": 22,
+    "h": 114,
+    "repeat_x": false
+  },
+  "balcon-join": {
+    "x": 42,
+    "y": 0,
+    "w": 66,
+    "h": 115,
+    "repeat_x": false
+  },
+  "frise-blason": {
+    "x": 110,
+    "y": 0,
+    "w": 21,
+    "h": 54,
+    "repeat_x": false
+  },
+  "frise-frise": {
+    "x": 133,
+    "y": 0,
+    "w": 18,
+    "h": 12,
+    "repeat_x": false
+  },
+  "frise-status": {
+    "x": 153,
+    "y": 0,
+    "w": 28,
+    "h": 77,
+    "repeat_x": false
+  },
+  "frise-windows2": {
+    "x": 183,
+    "y": 0,
+    "w": 75,
+    "h": 62,
+    "repeat_x": false
+  },
+  "ground-column": {
+    "x": 260,
+    "y": 0,
+    "w": 31,
+    "h": 199,
+    "repeat_x": false
+  },
+  "ground-door": {
+    "x": 293,
+    "y": 0,
+    "w": 29,
+    "h": 108,
+    "repeat_x": false
+  },
+  "ground-frise": {
+    "x": 324,
+    "y": 0,
+    "w": 75,
+    "h": 30,
+    "repeat_x": false
+  },
+  "main-last-windows2": {
+    "x": 401,
+    "y": 0,
+    "w": 82,
+    "h": 84,
+    "repeat_x": false
+  },
+  "main-last-windows2c": {
+    "x": 485,
+    "y": 0,
+    "w": 73,
+    "h": 100,
+    "repeat_x": false
+  },
+  "main-wall": {
+    "x": 560,
+    "y": 0,
+    "w": 34,
+    "h": 97,
+    "repeat_x": false
+  },
+  "main-windows2": {
+    "x": 596,
+    "y": 0,
+    "w": 79,
+    "h": 97,
+    "repeat_x": false
+  },
+  "main-windows2c": {
+    "x": 677,
+    "y": 0,
+    "w": 73,
+    "h": 70,
+    "repeat_x": false
+  },
+  "roof-frise": {
+    "x": 752,
+    "y": 0,
+    "w": 50,
+    "h": 26,
+    "repeat_x": false
+  },
+  "top-frise-box": {
+    "x": 804,
+    "y": 0,
+    "w": 26,
+    "h": 45,
+    "repeat_x": false
+  },
+  "top-frise-frise0": {
+    "x": 832,
+    "y": 0,
+    "w": 47,
+    "h": 9,
+    "repeat_x": false
+  },
+  "top-frise-frise1": {
+    "x": 881,
+    "y": 0,
+    "w": 83,
+    "h": 29,
+    "repeat_x": false
+  },
+  "top-frise-window": {
+    "x": 966,
+    "y": 0,
+    "w": 26,
+    "h": 45,
+    "repeat_x": false
+  },
+  "wall": {
+    "x": 994,
+    "y": 0,
+    "w": 13,
+    "h": 55,
+    "repeat_x": false
+  }
+}

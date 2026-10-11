@@ -1,0 +1,30 @@
+{
+  "corner": {
+    "x": 0,
+    "y": 0,
+    "w": 96,
+    "h": 96,
+    "repeat_x": false
+  },
+  "ornement": {
+    "x": 98,
+    "y": 0,
+    "w": 120,
+    "h": 120,
+    "repeat_x": false
+  },
+  "roof": {
+    "x": 220,
+    "y": 0,
+    "w": 128,
+    "h": 128,
+    "repeat_x": false
+  },
+  "window": {
+    "x": 350,
+    "y": 0,
+    "w": 64,
+    "h": 128,
+    "repeat_x": false
+  }
+}
